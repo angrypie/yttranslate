@@ -5,6 +5,7 @@ require('esbuild')
 	.build({
 		entryPoints: [entryPoint],
 		outfile: `${outDir}/dev.bundle.js`,
+		jsx: 'automatic',
 		bundle: true,
 		minify: true,
 		watch: {
@@ -49,7 +50,7 @@ function appendUserscriptPlugin() {
 }
 
 function generateUserscriptHeader() {
-//TODO use config to create metadata
+	//TODO use config to create metadata
 	return `// ==UserScript==
 // @name        react-userscript-template [dev]
 // @description Create userscripts with React.js using live-reload and instand build time (esbuild)

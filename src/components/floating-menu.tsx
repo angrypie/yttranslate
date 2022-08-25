@@ -6,15 +6,15 @@ import {
 	ytplayer,
 	ytplayerTime,
 } from '../store/player'
-import React, { Suspense } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom'
 
 export function FloatMenu() {
 	return (
 		<Affix position={{ bottom: 20, right: 20 }}>
-			<Suspense fallback={<div>Loading...</div>}>
+			<React.Suspense fallback={<div>Loading...</div>}>
 				<MenuButton />
-			</Suspense>
+			</React.Suspense>
 		</Affix>
 	)
 }
