@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        react-userscript-template
 // @description Create userscripts with React.js using live-reload and instand build time (esbuild)
-// @include     https://www.youtube.com/*
+// @match     https://*.youtube.com/*
 // @version     0.0.1
 // @inject-into page
 // ==/UserScript==
@@ -38,13 +38,17 @@ function hashString(string) {
 	return hash
 }
 
-//startReloadWatch fetches bundle every 2 seconds
+//startReloadWatch fetches bundle every 1 seconds
 //and compare the hash of the bundle with the hash of the previous bundle
 //and reloads the page if hash is different
 async function startReloadWatch() {
 	const url = `http://localhost:9111/dev.bundle.js`
 	const bundle = await getBundle(url)
-	eval(bundle)
+	try {
+		Function(bundle)()
+	} catch (err) {
+		console.error('trying to eval bundle with Function(bundle)', err)
+	}
 
 	const previousHash = hashString(bundle)
 	setInterval(async () => {
@@ -52,6 +56,6 @@ async function startReloadWatch() {
 		if (newHash !== previousHash) {
 			window.location.reload()
 		}
-	//It takes server some time to produce bundle
+		//It takes server some time to produce bundle
 	}, 1000)
 }
