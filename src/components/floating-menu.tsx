@@ -8,6 +8,7 @@ import {
 } from '../store/player'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { clearDictionary } from '../lib/dictionary'
 
 export function FloatMenu() {
 	return (
@@ -24,9 +25,9 @@ const MenuButton = () => {
 	const player = useRecoilValue(ytplayer)
 
 	const onClick = () => {
-		const time = player.getCurrentTime()
-		console.log(time)
-		console.log(player.getCaptionsContainer())
+		if (confirm('are you sure you want to exit?')) {
+			clearDictionary()
+		}
 	}
 
 	React.useEffect(() => {
@@ -38,7 +39,7 @@ const MenuButton = () => {
 	return (
 		<>
 			<Button onClick={onClick} leftIcon={<IconLanguage size={16} />}>
-				Learn Languages <PlayerTime />
+				Clead dictionary <PlayerTime />
 			</Button>
 			<CaptionsPortal />
 		</>
@@ -58,7 +59,11 @@ const TranslatedCaptions = ({ text }: { text: string }) => {
 	const words = text
 		.split(' ')
 		.map((word, i) => (
-			<TranslatedWord key={i} word={word} translation={dictionary.get(word)} />
+			<TranslatedWord
+				key={i}
+				word={word}
+				translation={dictionary.get(trimDictionaryWord(word))}
+			/>
 		))
 
 	return <span className={captionsContainerClassName}>{words}</span>
@@ -130,4 +135,9 @@ const useCaptionsObserver = () => {
 		return () => observer.disconnect()
 	}, [])
 	return [captions]
+}
+
+//function that trim  comas and semi-colons from the start and end of the string.
+export function trimDictionaryWord(str: string) {
+	return str.replace(/^[\s,;\.]+|[\s,;\.]+$/g, '')
 }

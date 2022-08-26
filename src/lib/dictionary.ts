@@ -1,4 +1,4 @@
-import { set, get } from 'idb-keyval'
+import { set, get, clear } from 'idb-keyval'
 
 export async function fetchDictionary() {
 	let serialMap = await get('pt-en')
@@ -6,13 +6,17 @@ export async function fetchDictionary() {
 
 	if (serialMap === undefined) {
 		console.log('Fetching dictionary')
-		const dictUrl =
-			'https://api.codetabs.com/v1/proxy?quest=https://dl.fbaipublicfiles.com/arrival/dictionaries/pt-en.txt'
+		// const dictUrl =
+		// 	'https://api.codetabs.com/v1/proxy?quest=https://dl.fbaipublicfiles.com/arrival/dictionaries/pt-en.txt'
+		const dictUrl = 'http://localhost:9111/en-pt.dic'
 		try {
 			const resp = await fetch(dictUrl, { mode: 'cors' })
 			let text = await resp.text()
 
-			pairs = text.split('\n').map(row => row.split('\t'))
+			pairs = text
+				.split('\n')
+				.map(row => row.split('\t'))
+				.map(row => [row[3], row[2]]) //filp en-pt dictionary
 
 			const serializedDict = JSON.stringify(pairs)
 
@@ -25,6 +29,15 @@ export async function fetchDictionary() {
 		console.log('Using cached dictionary')
 		pairs = JSON.parse(serialMap)
 	}
-	console.log("Dictionary created (size)", pairs.length)
+	console.log('Dictionary created (size)', pairs.length)
 	return new Map<string, string>(pairs)
 }
+
+export async function clearDictionary() {
+	try {
+		await clear()
+	} catch (err) {
+		alert('Failed to clean dictionary ' + err)
+	}
+}
+
