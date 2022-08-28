@@ -8,7 +8,7 @@ export async function fetchDictionary() {
 		console.log('Fetching dictionary')
 		// const dictUrl =
 		// 	'https://api.codetabs.com/v1/proxy?quest=https://dl.fbaipublicfiles.com/arrival/dictionaries/pt-en.txt'
-		const dictUrl = 'http://localhost:9111/en-pt.dic'
+		const dictUrl = 'http://localhost:9111/pt-en.dic'
 		try {
 			const resp = await fetch(dictUrl, { mode: 'cors' })
 			let text = await resp.text()
@@ -16,7 +16,7 @@ export async function fetchDictionary() {
 			pairs = text
 				.split('\n')
 				.map(row => row.split('\t'))
-				.map(row => [row[3], row[2]]) //filp en-pt dictionary
+				.map(row => [row[0], row[1]])
 
 			const serializedDict = JSON.stringify(pairs)
 

@@ -77,7 +77,14 @@ const TranslatedWord = ({
 	translation: string
 }) => {
 	return (
-		<Tooltip color='blue' offset={30} label={translation || '<no translation>'}>
+		<Tooltip
+			color='blue'
+			style={{
+				fontSize: '1em',
+			}}
+			offset={30}
+			label={translation || '<no translation>'}
+		>
 			<span style={{ cursor: 'pointer' }}>
 				{word}
 				<Space />
