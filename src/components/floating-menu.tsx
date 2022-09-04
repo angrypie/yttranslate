@@ -62,28 +62,43 @@ const TranslatedCaptions = ({ text }: { text: string }) => {
 			<TranslatedWord
 				key={i}
 				word={word}
-				translation={dictionary.get(trimDictionaryWord(word))}
+				translations={dictionary.get(trimDictionaryWord(word).toLowerCase())}
 			/>
 		))
 
 	return <span className={captionsContainerClassName}>{words}</span>
 }
 
-const TranslatedWord = ({
-	word,
-	translation,
-}: {
+interface TranslatedWordProps {
 	word: string
-	translation: string
-}) => {
+	translations?: string[]
+}
+
+//TODO show only most correct translation variants
+const TranslatedWord = ({ word, translations }: TranslatedWordProps) => {
+	const [opened, setOpened] = React.useState(false)
+	const [filtered, setFiltered] = React.useState(true)
+
+	//for now show only first 4 words on hover and rest on click
+	const label =
+		translations?.slice(0, filtered ? 4 : translations.length).join(', ') ||
+		word
 	return (
 		<Tooltip
-			color='blue'
-			style={{
-				fontSize: '1em',
+			opened={opened}
+			onMouseLeave={() => setOpened(false)}
+			onClick={(e) => {
+				//TODO stop default captions to responding to clicks (maybe replace with custom conatiner?)
+				e.preventDefault();
+				e.stopPropagation();
+				setFiltered(!filtered)
+				setOpened(!opened)
 			}}
+			onMouseEnter={() => setOpened(true)}
+			color='blue'
+			style={{ fontSize: '.8em' }}
 			offset={30}
-			label={translation || '<no translation>'}
+			label={label}
 		>
 			<span style={{ cursor: 'pointer' }}>
 				{word}

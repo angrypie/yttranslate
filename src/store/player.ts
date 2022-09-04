@@ -33,7 +33,7 @@ export const ytplayerTime = selector({
 
 export const bidirectionalDictionary = selector({
 	key: 'bidirectional-dictionary',
-	get: async (): Promise<Map<string, string>> => {
+	get: async (): Promise<Map<string, string[]>> => {
 		return await fetchDictionary()
 	},
 })

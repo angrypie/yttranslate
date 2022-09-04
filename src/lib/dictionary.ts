@@ -16,7 +16,7 @@ export async function fetchDictionary() {
 			pairs = text
 				.split('\n')
 				.map(row => row.split('\t'))
-				.map(row => [row[0], row[1]])
+				.map(words => [words[0], words.slice(1)])
 
 			const serializedDict = JSON.stringify(pairs)
 
@@ -30,7 +30,7 @@ export async function fetchDictionary() {
 		pairs = JSON.parse(serialMap)
 	}
 	console.log('Dictionary created (size)', pairs.length)
-	return new Map<string, string>(pairs)
+	return new Map<string, string[]>(pairs)
 }
 
 export async function clearDictionary() {
