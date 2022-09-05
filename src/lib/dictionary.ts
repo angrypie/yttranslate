@@ -8,7 +8,7 @@ export async function fetchDictionary() {
 		console.log('Fetching dictionary')
 		// const dictUrl =
 		// 	'https://api.codetabs.com/v1/proxy?quest=https://dl.fbaipublicfiles.com/arrival/dictionaries/pt-en.txt'
-		const dictUrl = 'http://localhost:9111/pt-en.dic'
+		const dictUrl = 'http://localhost:9111/pt-en.dic.gz'
 		try {
 			const resp = await fetch(dictUrl, { mode: 'cors' })
 			let text = await resp.text()
@@ -40,4 +40,3 @@ export async function clearDictionary() {
 		alert('Failed to clean dictionary ' + err)
 	}
 }
-

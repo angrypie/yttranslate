@@ -111,6 +111,8 @@ const TranslatedWord = ({ word, translations }: TranslatedWordProps) => {
 const Space = () => <span>&nbsp;</span>
 
 const CaptionsPortal = () => {
+	//Use dictionary to force fetching dictionary as fast as possbile
+	useRecoilValue(bidirectionalDictionary)
 	const [captions] = useCaptionsObserver()
 	return <>{captions}</>
 }
@@ -161,5 +163,5 @@ const useCaptionsObserver = () => {
 
 //function that trim  comas and semi-colons from the start and end of the string.
 export function trimDictionaryWord(str: string) {
-	return str.replace(/^[\s,;\.]+|[\s,;\.]+$/g, '')
+	return str.replace(/^[\s,;:\.]+|[\s,;:\.]+$/g, '')
 }
