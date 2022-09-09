@@ -8,7 +8,7 @@ import {
 } from '../store/player'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { clearDictionary } from '../lib/dictionary'
+import { clearDictionary, Translation } from '../lib/dictionary'
 
 export function FloatMenu() {
 	return (
@@ -30,7 +30,9 @@ const MenuButton = () => {
 		}
 	}
 
+	//TODO player paused on first page load - remove in production
 	React.useEffect(() => {
+		player.setCaptionsLanguage('pt-PT')
 		setTimeout(() => {
 			player.pauseVideo()
 		}, 2000)
@@ -38,8 +40,12 @@ const MenuButton = () => {
 	console.log('DEV_INFO ROOT RE-RENDER')
 	return (
 		<>
-			<Button onClick={onClick} leftIcon={<IconLanguage size={16} />}>
-				Clead dictionary <PlayerTime />
+			<Button
+				color='pink'
+				onClick={onClick}
+				leftIcon={<IconLanguage size={16} />}
+			>
+				Clean dictionary <Space /> <PlayerTime />
 			</Button>
 			<CaptionsPortal />
 		</>
@@ -71,7 +77,7 @@ const TranslatedCaptions = ({ text }: { text: string }) => {
 
 interface TranslatedWordProps {
 	word: string
-	translations?: string[]
+	translations?: Translation[]
 }
 
 //TODO show only most correct translation variants
@@ -80,25 +86,41 @@ const TranslatedWord = ({ word, translations }: TranslatedWordProps) => {
 	const [filtered, setFiltered] = React.useState(true)
 
 	//for now show only first 4 words on hover and rest on click
-	const label =
-		translations?.slice(0, filtered ? 4 : translations.length).join(', ') ||
-		word
+	const label = translations
+		?.sort((a, b) => b[1] - a[1])
+		.slice(0, filtered ? 3 : translations.length)
+		.map(([variant], i) => (
+			<div
+				key={i}
+				style={{
+					fontSize: i === 0 ? '.9em' : '.6em',
+					color: i === 0 ? 'white' : 'lightgray',
+					fontWeight: i === 0 ? 600 : 400,
+				}}
+			>
+				{variant}
+			</div>
+		))
 	return (
 		<Tooltip
 			opened={opened}
 			onMouseLeave={() => setOpened(false)}
-			onClick={(e) => {
+			onClick={e => {
 				//TODO stop default captions to responding to clicks (maybe replace with custom conatiner?)
-				e.preventDefault();
-				e.stopPropagation();
+				e.preventDefault()
+				e.stopPropagation()
 				setFiltered(!filtered)
 				setOpened(!opened)
 			}}
 			onMouseEnter={() => setOpened(true)}
-			color='blue'
-			style={{ fontSize: '.8em' }}
+			color='pink'
+			style={{
+				fontSize: '1em',
+				display: 'flex',
+				flexDirection: 'column-reverse',
+			}}
 			offset={30}
-			label={label}
+			label={label ?? word}
 		>
 			<span style={{ cursor: 'pointer' }}>
 				{word}

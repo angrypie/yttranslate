@@ -1,5 +1,5 @@
 import { atom, selector } from 'recoil'
-import { fetchDictionary } from '../lib/dictionary'
+import { fetchDictionary, Translation,  } from '../lib/dictionary'
 import { getYtplayer } from '../lib/ytplayer'
 
 export const ytplayer = selector({
@@ -25,7 +25,7 @@ export const currentTime = atom<number>({
 export const ytplayerTime = selector({
 	key: 'ytplayerTime',
 	get: ({ get }) => {
-		const time = get(currentTime)
+		get(currentTime) //making selector re-run everytime currentTime changes
 		const player = get(ytplayer)
 		return player.getCurrentTime()
 	},
@@ -33,7 +33,7 @@ export const ytplayerTime = selector({
 
 export const bidirectionalDictionary = selector({
 	key: 'bidirectional-dictionary',
-	get: async (): Promise<Map<string, string[]>> => {
+	get: async (): Promise<Map<string, Translation[]>> => {
 		return await fetchDictionary()
 	},
 })
