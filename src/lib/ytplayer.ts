@@ -6,8 +6,11 @@ export interface ExposedYtplayer {
 	pauseVideo(): void
 	playVideo(): void
 	getCurrentTime(): number
+	getCaptionWindowContainerId(): string
+	getOption(module: string, option: string): any
+	setOption(module: string, option: string, value: any): void
 }
-//
+
 //runtime check for object to be of type ExposedYtplayer
 export function isExposedYtplayer(obj: any): obj is ExposedYtplayer {
 	return (
@@ -20,6 +23,7 @@ export function isExposedYtplayer(obj: any): obj is ExposedYtplayer {
 
 export interface WrappedYtplayer extends ExposedYtplayer {
 	getCaptionsContainer(): HTMLElement
+	setCaptionsLanguage(language: string): void
 }
 
 //getYttlayer try to find movie_player eleement in the page.
@@ -32,6 +36,8 @@ export async function getYtplayer(): Promise<WrappedYtplayer> {
 			if (player === null) {
 				return
 			}
+			//change captions for youtube player
+			player.setAttribute('cc_load_policy', '1')
 			if (!isExposedYtplayer(player)) {
 				throw Error('"youtube movie_player found but not supported"')
 			}
@@ -45,5 +51,11 @@ export async function getYtplayer(): Promise<WrappedYtplayer> {
 const wrapYtplayer = (player: ExposedYtplayer): WrappedYtplayer => ({
 	...player,
 	getCaptionsContainer: () =>
-		document.getElementById('ytp-caption-window-container'),
+		document.getElementById(player.getCaptionWindowContainerId()),
+
+	//setCaptionsLanguage changes the language of the captions.
+	//use getOption('captions', 'tracklist') to get the list of available languages.
+	setCaptionsLanguage(language: string) {
+		player.setOption('captions', 'track', { languageCode: language })
+	},
 })
