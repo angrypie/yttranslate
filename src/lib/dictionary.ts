@@ -30,7 +30,7 @@ export async function fetchDictionary() {
 			await set('pt-en', serializedDict)
 		} catch (err) {
 			alert(err)
-			return
+			throw err
 		}
 	} else {
 		console.log('Using cached dictionary')
@@ -50,9 +50,9 @@ export async function clearDictionary() {
 
 //convert array contains flatened  tuples [string, number], unflatten them to Translation type
 function unflattenVariants(variants: Variants): Translation[] {
-	const result = []
+	const result: Translation[] = []
 	for (let i = 0; i < variants.length; i += 2) {
-		result.push([variants[i], variants[i + 1]])
+		result.push([variants[i] as string, parseInt(variants[i + 1] as string)])
 	}
 	return result
 }

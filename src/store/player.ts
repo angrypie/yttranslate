@@ -1,6 +1,6 @@
 import { atom, selector } from 'recoil'
-import { fetchDictionary, Translation,  } from '../lib/dictionary'
-import { getYtplayer } from '../lib/ytplayer'
+import { fetchDictionary, Translation,  } from 'lib/dictionary'
+import { getYtplayer } from 'lib/ytplayer'
 
 export const ytplayer = selector({
 	key: 'ytplayer',

@@ -1,13 +1,17 @@
 import { createRoot } from 'react-dom/client'
 import { MantineProvider } from '@mantine/core'
-import { FloatMenu } from './components/floating-menu'
+import { FloatMenu } from 'components/floating-menu'
 import { RecoilRoot } from 'recoil'
+import { CaptionsPortal } from 'components/captions'
 
 const App = () => {
 	return (
 		<RecoilRoot>
 			<MantineProvider withGlobalStyles withNormalizeCSS>
-				<FloatMenu />
+				<>
+					<CaptionsPortal />
+					<FloatMenu />
+				</>
 			</MantineProvider>
 		</RecoilRoot>
 	)
