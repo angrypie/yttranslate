@@ -174,7 +174,9 @@ const useCaptionsObserver = () => {
 				setCaptions(portals)
 			}
 		})
-		observer.observe(player.getCaptionsContainer(), {
+		const container = player.getCaptionsContainer()
+		console.log('captions container', container)
+		observer.observe(container, {
 			childList: true,
 			subtree: true,
 		})
@@ -183,7 +185,7 @@ const useCaptionsObserver = () => {
 	return [captions]
 }
 
-//function that trim  comas and semi-colons from the start and end of the string.
+// function that trims all non-alphanumeric characters from the start and end of the string.
 export function trimDictionaryWord(str: string) {
-	return str.replace(/^[\s,;:\.]+|[\s,;:\.]+$/g, '')
+	return str.replace(/^[\W_]+|[\W_]+$/g, '')
 }

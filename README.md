@@ -1,24 +1,27 @@
 ## In Progress
-	- display by default few variants with highest score
-	- redesign popover, make accent on most used words
-	- Trim all characters not related to word (eg " ? ).
+	- separate floating button from portals
+	- Split only by spaces and then fall-back to spliting by '-'
+	- How to load dictionary to Safari, considering access controll checks?
 
 ## Backlog
-	- Create button that toggles 'learning mode'
+	- show rest of sugestions on click or on long hover?
+	- Create app setings
 		- Setup learning (target) language
 		- Set captions to target langugage automatically (if captions exist)
-	- How to load dictionary to Safari, considering access controll checks?
-	- show rest of sugestions on click or on long hover?
-	- figure out why some popular words not in dictionary (bem vindos)
 	- use aproximate translation if word not found?
 		- what if different dictionaries uses different notation for characters like 'é'
-	- separate floating button from portals
-	- preload most used words first and then rest of the dictionary
 	- make sure that every source dictionary file are UTF8
+	- filter from source dictionary wrong entries
+		- incorrect langugae pair
+		- correct language but incorrect translation variant (use score?)
+	- words usage frequency, could we use score from library as loose indication of frequency?
+		- preload most used words first and then rest of the dictionary
 	- use MSW.js mocking library to be able to develop with HMR on dev page
-	- find a way to filter wrong translation variants from dictionary source
 
 ## Done
+	- Trim all characters not related to word (eg " ? ).
+	- redesign popover, make accent on most used words
+	- display by default few variants with highest score
 	- implement score for each variant and sort them in export file
 	- setup esbuild to serve gzip files with 'content-encoding: gzip'
 	- display suggestions / variants (first 4 on hover, rest on click)
