@@ -11,24 +11,6 @@
 	startReloadWatch()
 })()
 
-//getBundle is asncy function that fetches plain text from server with cors disabled
-async function getBundle(url) {
-	try {
-		const response = await fetch(url, {
-			method: 'GET',
-			mode: 'cors',
-			credentials: 'same-origin',
-			headers: {
-				'Content-Type': 'text/plain',
-			},
-		})
-		return response.text()
-	} catch (error) {
-		console.error('rollup-userscript: error fetching bundle')
-		throw error
-	}
-}
-
 //hashString is a function that returns a hash of a string
 function hashString(string) {
 	let hash = 0
@@ -56,6 +38,38 @@ async function startReloadWatch() {
 		if (newHash !== previousHash) {
 			window.location.reload()
 		}
-		//It takes server some time to produce bundle
+		//check for new bundle every 1 seconds
 	}, 1000)
+}
+
+//getBundle is asncy function that fetches plain text from server with cors disabled
+async function getBundle(url) {
+	const response = await getBundleWithCache(url)
+	return response.text()
+}
+
+async function getBundleWithCache(url) {
+	try {
+		const response = await fetch(url, {
+			method: 'GET',
+			mode: 'cors',
+			credentials: 'same-origin',
+			headers: {
+				'Content-Type': 'text/plain',
+			},
+		})
+		const cache = await caches.open('rollup-userscript')
+		cache.put(url, response.clone())
+		return response
+	} catch (error) {
+		console.error('rollup-userscript: fetching bundle', error)
+		try {
+			const cache = await caches.open('rollup-userscript')
+			const cachedResponse = await cache.match(url)
+			console.log('rollup-userscript: using cached response')
+			return cachedResponse
+		} catch (error) {
+			throw error
+		}
+	}
 }

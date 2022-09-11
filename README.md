@@ -1,5 +1,4 @@
 ## In Progress
-	- separate floating button from portals
 	- Split only by spaces and then fall-back to spliting by '-'
 	- How to load dictionary to Safari, considering access controll checks?
 
@@ -19,6 +18,7 @@
 	- use MSW.js mocking library to be able to develop with HMR on dev page
 
 ## Done
+	- separate floating button from portals
 	- Trim all characters not related to word (eg " ? ).
 	- redesign popover, make accent on most used words
 	- display by default few variants with highest score
