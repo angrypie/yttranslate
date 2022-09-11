@@ -1,12 +1,17 @@
 ## In Progress
-	- Split only by spaces and then fall-back to spliting by '-'
-	- How to load dictionary to Safari, considering access controll checks?
+	- find a way to detect words in sentence using existing dictionary database,
+		- use full text searh (FlexSearch)?
+		-	don't relay that much on characters triming, it hard to adapt to every language.
 
 ## Backlog
-	- show rest of sugestions on click or on long hover?
+	- How to load dictionary to Safari, considering access controll checks?
+	- improve words detection
+		- lookup two (three?) words combinations (just use neighbors) to cover such cases 'às vezes  sometimes 13'
+		- Split only by spaces and then fall-back to spliting by '-'
 	- Create app setings
 		- Setup learning (target) language
 		- Set captions to target langugage automatically (if captions exist)
+	- show rest of sugestions on click or on long hover?
 	- use aproximate translation if word not found?
 		- what if different dictionaries uses different notation for characters like 'é'
 	- make sure that every source dictionary file are UTF8

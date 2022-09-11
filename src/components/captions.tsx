@@ -88,7 +88,6 @@ export const CaptionsPortal = () => {
 
 type ReactPortal = ReturnType<typeof ReactDOM.createPortal>
 
-
 //useCaptionsObserver watches for captions replace them with translatable ones
 //and return portals to render them and substitute original ones
 const useCaptionsObserver = () => {
@@ -135,7 +134,27 @@ const useCaptionsObserver = () => {
 	return [captions]
 }
 
-// function that trims all non-alphanumeric characters from the start and end of the string.
-export function trimDictionaryWord(str: string) {
-	return str.replace(/^[\W_]+|[\W_]+$/g, '')
+
+//trimDictionaryWord trims word of special characters
+//Works by comparing lower and upper case, so will not work in some languages.
+function trimDictionaryWord(str: string) {
+	const lower = str.toLowerCase()
+	const upper = str.toUpperCase()
+
+	let res = ''
+	let start = true
+	for (let i = 0; i < lower.length; ++i) {
+		//if lower case not equal to upper than it's not a special character
+		if (lower[i] !== upper[i] || !isNaN(Number(lower[i]))) {
+			// when meet first not special character set indicate that by setting start
+			start = false
+			res += str[i]
+		} else {
+			// when meet special character by the end of the word then exit.
+			if (!start) {
+				break
+			}
+		}
+	}
+	return res.trim()
 }
