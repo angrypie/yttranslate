@@ -3,24 +3,35 @@
 		- use full text searh (FlexSearch)?
 		-	don't relay that much on characters triming, it hard to adapt to every language.
 
+## Sprint
+	- Fix words flickering when tooltip appear
+	- load dictionaries from temporary repository on github
+	- Show native and target language captions at the same time.
+	- Setup learning (target) language
+	- Set captions to target langugage automatically (if captions exist)
+
 ## Backlog
-	- How to load dictionary to Safari, considering access controll checks?
-	- improve words detection
+	- "Report missing/wrong translation" feature for dev purposes (log varians if exist).
+	- **Interface**
+		- Create app setings
+	- **Improve words detection**
 		- lookup two (three?) words combinations (just use neighbors) to cover such cases 'às vezes  sometimes 13'
 		- Split only by spaces and then fall-back to spliting by '-'
-	- Create app setings
-		- Setup learning (target) language
-		- Set captions to target langugage automatically (if captions exist)
-	- show rest of sugestions on click or on long hover?
-	- use aproximate translation if word not found?
-		- what if different dictionaries uses different notation for characters like 'é'
-	- make sure that every source dictionary file are UTF8
-	- filter from source dictionary wrong entries
-		- incorrect langugae pair
-		- correct language but incorrect translation variant (use score?)
-	- words usage frequency, could we use score from library as loose indication of frequency?
-		- preload most used words first and then rest of the dictionary
-	- use MSW.js mocking library to be able to develop with HMR on dev page
+		- use aproximate translation if word not found?
+			- what if different dictionaries uses different notation for characters like 'é'
+	- **Improve lookup**
+		- Show translation for rare words on pause (use socre first then calculate based on lookup count)
+		- show rest of sugestions on click or on long hover?
+	- **Dictionary preparation**
+		- make sure that every source dictionary file are UTF8
+		- filter from source dictionary wrong entries
+			- incorrect langugae pair
+			- correct language but incorrect translation variant (use score?)
+	- **Perfomance**
+		- words usage frequency, could we use score from library as loose indication of frequency?
+			- preload most used words first and then rest of the dictionary
+	- **Dev environment**
+		- use MSW.js mocking library to be able to develop with HMR on dev page
 
 ## Done
 	- separate floating button from portals

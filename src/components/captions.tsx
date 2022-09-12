@@ -1,6 +1,7 @@
 import { Tooltip } from '@mantine/core'
 import { useRecoilValue } from 'recoil'
-import { bidirectionalDictionary, ytplayer } from 'store/player'
+import { ytplayer } from 'store/player'
+import { bidirectionalDictionary } from 'store/dictionary'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Translation } from 'lib/dictionary'
@@ -9,7 +10,6 @@ import { Space } from 'components//text'
 const captionsContainerClassName = 'yttranslation-captions'
 
 const TranslatedCaptions = ({ text }: { text: string }) => {
-	console.log('render captions', text)
 	const dictionary = useRecoilValue(bidirectionalDictionary)
 	const words = text
 		.split(' ')
@@ -133,7 +133,6 @@ const useCaptionsObserver = () => {
 	}, [])
 	return [captions]
 }
-
 
 //trimDictionaryWord trims word of special characters
 //Works by comparing lower and upper case, so will not work in some languages.

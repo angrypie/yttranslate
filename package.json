@@ -26,10 +26,12 @@
 	},
 	"dependencies": {
 		"@emotion/react": "^11.10.0",
+		"@lyrasearch/lyra": "^0.2.4",
 		"@mantine/core": "^5.2.0",
 		"@mantine/hooks": "^5.2.0",
 		"@tabler/icons": "^1.84.0",
 		"@types/react-dom": "^18.0.6",
+		"fastest-levenshtein": "^1.0.16",
 		"idb-keyval": "^6.2.0",
 		"ky": "^0.31.1",
 		"react": "^18.2.0",

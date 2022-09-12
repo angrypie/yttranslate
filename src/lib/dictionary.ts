@@ -1,4 +1,6 @@
 import { set, get, clear } from 'idb-keyval'
+import { create, insertBatch, search } from '@lyrasearch/lyra'
+import * as levenshtein from 'fastest-levenshtein'
 
 //Variats allows us to use for a while tsv data format for translations.
 //It will be changed soon but for now it's fast enough and convinient.
@@ -7,9 +9,14 @@ type Variants = (string | number)[]
 //Translation is a translation variant and it's score
 export type Translation = [string, number]
 
+export interface Dictionary {
+	//Search word in dictionary and return translation variants
+	get(word: string): Translation[]
+}
+
 export async function fetchDictionary() {
 	let serialMap = await get('pt-en')
-	let pairs = []
+	let pairs: [string, Translation[]][] = []
 
 	if (serialMap === undefined) {
 		console.log('Fetching dictionary')
@@ -37,7 +44,52 @@ export async function fetchDictionary() {
 		pairs = JSON.parse(serialMap)
 	}
 	console.log('Dictionary created (size)', pairs.length)
-	return new Map<string, Translation[]>(pairs)
+	return FlexDictionary(pairs)
+}
+
+const FlexDictionary = (pairs: [string, Translation[]][]) => {
+	const db = create({
+		schema: {
+			word: 'string',
+		},
+	})
+
+	insertBatch(
+		db,
+		pairs.map(([word]) => ({ word }))
+	).then(() => {
+		console.log('fuzzy search ready')
+	})
+
+	const map = new Map<string, Translation[]>(pairs)
+	return {
+		get(word: string) {
+			// TODO improve lookup
+			// console.log("improve lookup")
+			const firstTry = map.get(word)
+			if (firstTry !== undefined) {
+				return firstTry
+			}
+			const results = search(db, { term: word, properties: '*', limit: 1000 })
+			if (results.hits.length === 0) {
+				return []
+			}
+
+			const closest = levenshtein.closest(
+				word,
+				results.hits.map(hit => hit.word)
+			)
+			console.log('not found', word, 'but closest is', closest)
+			return map.get(closest) || []
+		},
+	}
+}
+
+const MapDictionary = (pairs: [string, Translation[]][]) => {
+	const map = new Map<string, Translation[]>(pairs)
+	return {
+		get: (word: string) => map.get(word) || [],
+	}
 }
 
 export async function clearDictionary() {
