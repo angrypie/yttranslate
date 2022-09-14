@@ -1,6 +1,14 @@
 import { set, get, clear } from 'idb-keyval'
-import { create, insertBatch, search } from '@lyrasearch/lyra'
+import {
+	create,
+	insertBatch,
+	Lyra,
+	search,
+	save,
+	PropertiesSchema,
+} from '@lyrasearch/lyra'
 import * as levenshtein from 'fastest-levenshtein'
+import { match, P } from 'ts-pattern'
 
 //Variats allows us to use for a while tsv data format for translations.
 //It will be changed soon but for now it's fast enough and convinient.
@@ -20,8 +28,6 @@ export async function fetchDictionary() {
 
 	if (serialMap === undefined) {
 		console.log('Fetching dictionary')
-		// const dictUrl =
-		// 	'https://api.codetabs.com/v1/proxy?quest=https://dl.fbaipublicfiles.com/arrival/dictionaries/pt-en.txt'
 		const dictUrl = 'http://localhost:9111/pt-en.dic.gz'
 		try {
 			const resp = await fetch(dictUrl, { mode: 'cors' })
@@ -43,25 +49,39 @@ export async function fetchDictionary() {
 		console.log('Using cached dictionary')
 		pairs = JSON.parse(serialMap)
 	}
-	console.log('Dictionary created (size)', pairs.length)
-	return FlexDictionary(pairs)
+	const dict = await FuzzyDictionary(pairs)
+	return dict
 }
 
-const FlexDictionary = (pairs: [string, Translation[]][]) => {
-	const db = create({
-		schema: {
-			word: 'string',
-		},
-	})
+type FuzzySchema = {
+	word: 'string'
+}
 
-	insertBatch(
-		db,
-		pairs.map(([word]) => ({ word }))
-	).then(() => {
-		console.log('fuzzy search ready')
-	})
-
+async function FuzzyDictionary(pairs: [string, Translation[]][]) {
 	const map = new Map<string, Translation[]>(pairs)
+	console.log('Dictionary created (size)', pairs.length)
+	const backup: string | undefined = await get('pt-en-fuzzy-search')
+
+	const db = match(backup)
+		.with(P.string, (backup) => {
+			const db = restoreLyra<FuzzySchema>(backup)
+			console.log("fuzzy search restored")
+			return db
+		})
+		.otherwise(() => {
+			const db = create<FuzzySchema>({ schema: { word: 'string' } })
+			insertBatch(
+				db,
+				pairs.map(([word]) => ({ word }))
+			).then(() => {
+				console.log('fuzzy search ready')
+				set('pt-en-fuzzy-search', persistLyra(db)).then(() => {
+					console.log('fuzzy search backup saved')
+				})
+			})
+			return db
+		})
+
 	return {
 		get(word: string) {
 			// TODO improve lookup
@@ -85,13 +105,6 @@ const FlexDictionary = (pairs: [string, Translation[]][]) => {
 	}
 }
 
-const MapDictionary = (pairs: [string, Translation[]][]) => {
-	const map = new Map<string, Translation[]>(pairs)
-	return {
-		get: (word: string) => map.get(word) || [],
-	}
-}
-
 export async function clearDictionary() {
 	try {
 		await clear()
@@ -107,4 +120,23 @@ function unflattenVariants(variants: Variants): Translation[] {
 		result.push([variants[i] as string, parseInt(variants[i + 1] as string)])
 	}
 	return result
+}
+
+function restoreLyra<T extends PropertiesSchema>(data: string): Lyra<T> {
+	const db = create({
+		schema: {
+			__placeholder: 'string',
+		},
+	})
+	const deserialized = JSON.parse(data.toString())
+
+	db.index = deserialized.index
+	db.docs = deserialized.docs
+	db.nodes = deserialized.nodes
+	db.schema = deserialized.schema
+	return db as unknown as Lyra<T>
+}
+
+function persistLyra<T extends PropertiesSchema>(db: Lyra<T>): string {
+	return JSON.stringify(save(db))
 }

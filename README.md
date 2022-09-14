@@ -1,14 +1,16 @@
 ## In Progress
-	- find a way to detect words in sentence using existing dictionary database,
-		- use full text searh (FlexSearch)?
-		-	don't relay that much on characters triming, it hard to adapt to every language.
+	- show some word if translation not found
 
 ## Sprint
 	- Fix words flickering when tooltip appear
+	- subtitles container should stay in one vertical polition (bottom bar now makes it jump around)
 	- load dictionaries from temporary repository on github
 	- Show native and target language captions at the same time.
-	- Setup learning (target) language
+	- Setup learning target language
 	- Set captions to target langugage automatically (if captions exist)
+	### Completed in sprint
+	+ use fuzzy search to find simmilar word and Levenshtine distance to find best match.
+	+ cache fuzzy search index
 
 ## Backlog
 	- "Report missing/wrong translation" feature for dev purposes (log varians if exist).
@@ -32,6 +34,8 @@
 			- preload most used words first and then rest of the dictionary
 	- **Dev environment**
 		- use MSW.js mocking library to be able to develop with HMR on dev page
+	- find a way to detect words in sentence using existing dictionary database,
+		-	don't relay that much on characters triming, it hard to adapt to every language.
 
 ## Done
 	- separate floating button from portals
