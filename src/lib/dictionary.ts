@@ -62,6 +62,7 @@ async function FuzzyDictionary(pairs: [string, Translation[]][]) {
 
 	let db: null | Lyra<FuzzySchema> = null
 
+	//TODO make it assync
 	match(backup)
 		.with(P.string, async backup => {
 			db = restoreLyra<FuzzySchema>(backup)

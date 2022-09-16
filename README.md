@@ -1,14 +1,15 @@
 ## In Progress
-	- show some word if translation not found
+	- Show UI immediately after page load (don't wait for dictionary load)
 
 ## Sprint
+	- Setup learning target language
 	- Fix words flickering when tooltip appear
 	- subtitles container should stay in one vertical polition (bottom bar now makes it jump around)
 	- load dictionaries from temporary repository on github
 	- Show native and target language captions at the same time.
-	- Setup learning target language
 	- Set captions to target langugage automatically (if captions exist)
 	### Completed in sprint
+	+ show same word if translation not found
 	+ use fuzzy search to find simmilar word and Levenshtine distance to find best match.
 	+ cache fuzzy search index
 

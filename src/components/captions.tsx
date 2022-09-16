@@ -30,13 +30,13 @@ interface TranslatedWordProps {
 }
 
 //TODO show only most correct translation variants
-const TranslatedWord = ({ word, translations }: TranslatedWordProps) => {
+const TranslatedWord = ({ word, translations = [] }: TranslatedWordProps) => {
 	const [opened, setOpened] = React.useState(false)
 	const [filtered, setFiltered] = React.useState(true)
 
 	//for now show only first 4 words on hover and rest on click
 	const label = translations
-		?.sort((a, b) => b[1] - a[1])
+		.sort((a, b) => b[1] - a[1])
 		.slice(0, filtered ? 3 : translations.length)
 		.map(([variant], i) => (
 			<div
@@ -69,7 +69,7 @@ const TranslatedWord = ({ word, translations }: TranslatedWordProps) => {
 				flexDirection: 'column-reverse',
 			}}
 			offset={30}
-			label={label ?? word}
+			label={label.length === 0 ? word : label}
 		>
 			<span style={{ cursor: 'pointer' }}>
 				{word}
@@ -79,10 +79,18 @@ const TranslatedWord = ({ word, translations }: TranslatedWordProps) => {
 	)
 }
 
-export const CaptionsPortal = () => {
+export const CaptionsPortal = () => (
+	//do not hang all components tree waiting for dictionaries to be ready
+	<React.Suspense fallback={null}>
+		<CaptionsObserver />
+	</React.Suspense>
+)
+
+const CaptionsObserver = () => {
 	//Use dictionary to force fetching dictionary as fast as possbile
 	useRecoilValue(bidirectionalDictionary)
 	const [captions] = useCaptionsObserver()
+	//use React Susperse
 	return <>{captions}</>
 }
 
