@@ -5,6 +5,7 @@ import { Space } from 'components/text'
 import { ytplayer, ytplayerTime } from 'store/player'
 import React from 'react'
 import { clearDictionary } from 'lib/dictionary'
+import {userConfig} from 'store/user'
 
 export function FloatMenu() {
 	return (
@@ -19,6 +20,7 @@ export function FloatMenu() {
 //MuneButton waits for player to be loaded
 const MenuButton = () => {
 	const player = useRecoilValue(ytplayer)
+	const user = useRecoilValue(userConfig)
 
 	const onClick = () => {
 		if (confirm('are you sure you want to exit?')) {
@@ -28,7 +30,7 @@ const MenuButton = () => {
 
 	//TODO player paused on first page load - remove in production
 	React.useEffect(() => {
-		player.setCaptionsLanguage('pt-PT')
+		player.setCaptionsLanguage(user.targetLanguage)
 		setTimeout(() => {
 			player.pauseVideo()
 		}, 2000)
