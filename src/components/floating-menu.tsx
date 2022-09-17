@@ -1,7 +1,7 @@
-import { Affix, Button, Modal, Select } from '@mantine/core'
+import { Affix, Button, Modal, Select, Text } from '@mantine/core'
 import { IconLanguage } from '@tabler/icons'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { ytplayer } from 'store/player'
+import { ytplayerTime } from 'store/player'
 import React from 'react'
 import { userConfig } from 'store/user'
 
@@ -17,18 +17,8 @@ export function FloatMenu() {
 
 //MuneButton waits for player to be loaded
 const MenuButton = () => {
-	const player = useRecoilValue(ytplayer)
-	const user = useRecoilValue(userConfig)
-
 	const [opened, setOpened] = React.useState(false)
 
-	//TODO player paused on first page load - remove in production
-	React.useEffect(() => {
-		player.setCaptionsLanguage(user.targetLanguage)
-		setTimeout(() => {
-			player.pauseVideo()
-		}, 2000)
-	}, [])
 	console.log('DEV_INFO ROOT RE-RENDER')
 	return (
 		<>
@@ -40,7 +30,7 @@ const MenuButton = () => {
 				onClick={() => setOpened(true)}
 				leftIcon={<IconLanguage size={16} />}
 			>
-				Settings
+				Settings ({<PlayerTime />}s)
 			</Button>
 		</>
 	)
@@ -88,4 +78,9 @@ function UserSettingsForm() {
 			</Button>
 		</>
 	)
+}
+
+function PlayerTime() {
+	const time = useRecoilValue(ytplayerTime)
+	return <Text>{time.toFixed()}</Text>
 }

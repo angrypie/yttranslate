@@ -9,7 +9,7 @@ export const ytplayer = selector({
 })
 
 export const currentTime = atom<number>({
-	key: 'playelUpdateLoop',
+	key: 'playerUpdateLoop',
 	default: 0,
 	effects: [
 		({ setSelf }) => {
@@ -27,5 +27,16 @@ export const ytplayerTime = selector({
 		get(currentTime) //making selector re-run everytime currentTime changes
 		const player = get(ytplayer)
 		return player.getCurrentTime()
+	},
+})
+
+//ytVideoId is the id of the video that is currently playing.
+//It is used to check if the video has changed.
+export const ytVideoId = selector({
+	key: 'ytVideoId',
+	get: ({ get }) => {
+		get(currentTime) //making selector re-run everytime currentTime changes
+		const player = get(ytplayer)
+		return player.getVideoData().video_id
 	},
 })

@@ -1,12 +1,13 @@
 ## In Progress
-	- Should work when user choose videa via UI (now only on page load)
+	- subtitles container should stay in one vertical position (bottom bar now makes it jump around)
 
 ## Sprint
 	- Fix words flickering when tooltip appear
-	- subtitles container should stay in one vertical polition (bottom bar now makes it jump around)
 	- load dictionaries from temporary repository on github
 	- Show native and target language captions at the same time.
+	- Perpare portuese/russian dictionaries
 	### Completed in sprint
+	+ Monitor video_id, when changed - re-initialize captions observer.
 	+ Setup learning target language
 	+ Set captions to target langugage automatically (if captions exist)
 	+ Show UI immediately after page load (don't wait for dictionary load)

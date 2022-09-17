@@ -22,7 +22,7 @@ export function isExposedYtplayer(obj: any): obj is ExposedYtplayer {
 }
 
 export interface WrappedYtplayer extends ExposedYtplayer {
-	getCaptionsContainer(): HTMLElement
+	getCaptionsContainer(): HTMLElement | null
 	setCaptionsLanguage(language: string): void
 }
 

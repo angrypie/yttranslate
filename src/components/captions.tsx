@@ -1,11 +1,12 @@
 import { Tooltip } from '@mantine/core'
 import { useRecoilValue } from 'recoil'
-import { ytplayer } from 'store/player'
+import { ytplayer, ytVideoId } from 'store/player'
 import { bidirectionalDictionary } from 'store/dictionary'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Translation } from 'lib/dictionary'
 import { Space } from 'components//text'
+import { userConfig } from 'store/user'
 
 const captionsContainerClassName = 'yttranslation-captions'
 
@@ -100,7 +101,11 @@ type ReactPortal = ReturnType<typeof ReactDOM.createPortal>
 //and return portals to render them and substitute original ones
 const useCaptionsObserver = () => {
 	const player = useRecoilValue(ytplayer)
+	const user = useRecoilValue(userConfig)
+	const videoId = useRecoilValue(ytVideoId)
+
 	const [captions, setCaptions] = React.useState<ReactPortal[]>([])
+
 	React.useEffect(() => {
 		const observer = new MutationObserver(records => {
 			const portals: ReactPortal[] = []
@@ -132,13 +137,21 @@ const useCaptionsObserver = () => {
 			}
 		})
 		const container = player.getCaptionsContainer()
+		if (container === null) {
+			console.log("WARN Can't find captions container")
+			return
+		}
 		console.log('captions container', container)
 		observer.observe(container, {
 			childList: true,
 			subtree: true,
 		})
+		//Set captions to target language on video change
+		player.setCaptionsLanguage(user.targetLanguage)
+		//TODO player paused on first page load - remove in production
+		player.pauseVideo()
 		return () => observer.disconnect()
-	}, [])
+	}, [videoId])
 	return [captions]
 }
 
