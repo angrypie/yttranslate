@@ -1,5 +1,5 @@
 ## In Progress
-	- Setup learning target language
+	- Should work when user choose videa via UI (now only on page load)
 
 ## Sprint
 	- Fix words flickering when tooltip appear
@@ -7,6 +7,7 @@
 	- load dictionaries from temporary repository on github
 	- Show native and target language captions at the same time.
 	### Completed in sprint
+	+ Setup learning target language
 	+ Set captions to target langugage automatically (if captions exist)
 	+ Show UI immediately after page load (don't wait for dictionary load)
 	+ show same word if translation not found

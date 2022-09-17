@@ -1,11 +1,9 @@
+import { Affix, Button, Modal, Select } from '@mantine/core'
 import { IconLanguage } from '@tabler/icons'
-import { Affix, Button, Text } from '@mantine/core'
-import { useRecoilValue } from 'recoil'
-import { Space } from 'components/text'
-import { ytplayer, ytplayerTime } from 'store/player'
+import { useRecoilState, useRecoilValue } from 'recoil'
+import { ytplayer } from 'store/player'
 import React from 'react'
-import { clearDictionary } from 'lib/dictionary'
-import {userConfig} from 'store/user'
+import { userConfig } from 'store/user'
 
 export function FloatMenu() {
 	return (
@@ -22,11 +20,7 @@ const MenuButton = () => {
 	const player = useRecoilValue(ytplayer)
 	const user = useRecoilValue(userConfig)
 
-	const onClick = () => {
-		if (confirm('are you sure you want to exit?')) {
-			clearDictionary()
-		}
-	}
+	const [opened, setOpened] = React.useState(false)
 
 	//TODO player paused on first page load - remove in production
 	React.useEffect(() => {
@@ -38,18 +32,60 @@ const MenuButton = () => {
 	console.log('DEV_INFO ROOT RE-RENDER')
 	return (
 		<>
+			<Modal opened={opened} onClose={() => setOpened(false)} title='Settings'>
+				<UserSettingsForm />
+			</Modal>
 			<Button
 				color='pink'
-				onClick={onClick}
+				onClick={() => setOpened(true)}
 				leftIcon={<IconLanguage size={16} />}
 			>
-				Clean dictionary <Space /> <PlayerTime />
+				Settings
 			</Button>
 		</>
 	)
 }
 
-const PlayerTime = () => {
-	const time = useRecoilValue(ytplayerTime)
-	return <Text>{time.toFixed()}s</Text>
+function UserSettingsForm() {
+	const [userSettings, setUserSettings] = useRecoilState(userConfig)
+	const [targetLanguage, setTargetLanguage] = React.useState<string | null>(
+		userSettings.targetLanguage
+	)
+
+	const clearDictionary = () => {
+		if (confirm('are you sure you want to exit?')) {
+			clearDictionary()
+		}
+	}
+
+	const changeUserSettings = () => {
+		if (targetLanguage !== null) {
+			setUserSettings(old => ({ ...old, targetLanguage }))
+		}
+	}
+
+	return (
+		<>
+			<Select
+				label='Target Language'
+				placeholder='Select language'
+				value={targetLanguage}
+				onChange={setTargetLanguage}
+				data={[
+					{ value: 'pt-PT', label: 'Portuguese' },
+					{ value: 'en-US', label: 'English' },
+					{ value: 'ru-RU', label: 'Russian' },
+				]}
+			/>
+			<br />
+			<Button color='green' onClick={changeUserSettings}>
+				Change User Settings
+			</Button>
+			<br />
+			<br />
+			<Button color='red' onClick={clearDictionary}>
+				Clear Dictionary
+			</Button>
+		</>
+	)
 }
