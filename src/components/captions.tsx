@@ -91,51 +91,31 @@ const CaptionsObserver = () => {
 	//Use dictionary to force fetching dictionary as fast as possbile
 	useRecoilValue(bidirectionalDictionary)
 	const [captions] = useCaptionsObserver()
-	//use React Susperse
+
 	return <>{captions}</>
 }
 
 type ReactPortal = ReturnType<typeof ReactDOM.createPortal>
 
+interface CaptionLine {
+	text: string
+	origin: Element
+}
+
 //useCaptionsObserver watches for captions replace them with translatable ones
 //and return portals to render them and substitute original ones
-const useCaptionsObserver = () => {
+//To change relacing captions strategy change captionsToPortals(...)
+//To adapt to another player also change captionsMutationCallback(...)
+const useCaptionsObserver = (): ReactPortal[] => {
 	const player = useRecoilValue(ytplayer)
 	const user = useRecoilValue(userConfig)
 	const videoId = useRecoilValue(ytVideoId)
 
-	const [captions, setCaptions] = React.useState<ReactPortal[]>([])
+	// const [captions, setCaptions] = React.useState<ReactPortal[]>([])
+	const [captions, setCaptions] = React.useState<CaptionLine[]>([])
 
 	React.useEffect(() => {
-		const observer = new MutationObserver(records => {
-			const portals: ReactPortal[] = []
-			records.forEach(record => {
-				const target = record.target as HTMLElement
-				if (!target.className.includes('ytp-caption-segment')) {
-					return
-				}
-				if (
-					target.children[0]?.className?.includes?.(captionsContainerClassName)
-				) {
-					return
-				}
-				const text = target.innerText.slice()
-				//Ignore change when inner text set to empty string to avoid racing when clearing original text
-				if (text === '') {
-					return
-				}
-				//Set original text to empty string to clear original text
-				target.innerText = ''
-				portals.push(
-					ReactDOM.createPortal(<TranslatedCaptions text={text} />, target)
-				)
-			})
-			//It prevents re-rendering of captions when they are not changed
-			//but makes them hang on the screen until next mutation
-			if (portals.length > 0) {
-				setCaptions(portals)
-			}
-		})
+		const observer = new MutationObserver(captionsMutationCallback(setCaptions))
 		const container = player.getCaptionsContainer()
 		if (container === null) {
 			console.log("WARN Can't find captions container")
@@ -152,12 +132,13 @@ const useCaptionsObserver = () => {
 		player.pauseVideo()
 		return () => observer.disconnect()
 	}, [videoId])
-	return [captions]
+
+	return replaceOriginalCaptions(captions)
 }
 
 //trimDictionaryWord trims word of special characters
 //Works by comparing lower and upper case, so will not work in some languages.
-function trimDictionaryWord(str: string) {
+const trimDictionaryWord = (str: string) => {
 	const lower = str.toLowerCase()
 	const upper = str.toUpperCase()
 
@@ -178,3 +159,45 @@ function trimDictionaryWord(str: string) {
 	}
 	return res.trim()
 }
+
+type CaptionsSetter = (captions: CaptionLine[]) => void
+
+const captionsMutationCallback = (
+	setCaptions: CaptionsSetter
+): MutationCallback => {
+	const callback = (records: MutationRecord[]) => {
+		const captions: CaptionLine[] = []
+		records.forEach(record => {
+			const origin = record.target as HTMLElement
+			if (!origin.className.includes('ytp-caption-segment')) {
+				return
+			}
+			if (
+				origin.children[0]?.className?.includes?.(captionsContainerClassName)
+			) {
+				return
+			}
+			const text = origin.innerText.slice()
+			//Ignore change when inner text set to empty string to avoid racing when clearing original text
+			if (text === '') {
+				return
+			}
+			//Set original text to empty string to clear original text
+			origin.innerText = ''
+			captions.push({ text, origin })
+		})
+		//It prevents re-rendering of captions when they are not changed
+		//but makes them hang on the screen until next mutation they are deleted.
+		if (captions.length > 0) {
+			setCaptions(captions)
+		}
+	}
+	return callback
+}
+
+const replaceOriginalCaptions = (captions: CaptionLine[]): ReactPortal[] =>
+	captions.map(caption => captionToPortal(caption, caption.origin))
+
+//TODO should we unmount react portals?
+const captionToPortal = ({ text }: CaptionLine, target: Element): ReactPortal =>
+	ReactDOM.createPortal(<TranslatedCaptions text={text} />, target)
