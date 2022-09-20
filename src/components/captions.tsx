@@ -7,10 +7,46 @@ import ReactDOM from 'react-dom'
 import { Translation } from 'lib/dictionary'
 import { Space } from 'components//text'
 import { userConfig } from 'store/user'
+import { WrappedYtplayer } from 'lib/ytplayer'
 
-const captionsContainerClassName = 'yttranslation-captions'
+interface CaptionsContainerProps {
+	captions: CaptionLine[]
+}
 
-const TranslatedCaptions = ({ text }: { text: string }) => {
+const CaptionsContainer = ({ captions }: CaptionsContainerProps) => {
+	React.useEffect(() => {
+		//add event listener to captionsContainerClassNames
+		setTimeout(() => {
+			Array.from(
+				document.getElementsByClassName(captionsContainerClassName)
+			).forEach(node =>
+				node.addEventListener('click', () => {
+					alert('clicked')
+				})
+			)
+		}, 200)
+	}, [captions])
+	return (
+		<div
+			style={{
+				display: 'flex',
+				flexDirection: 'column',
+				position: 'relative',
+				zIndex: '300',
+				fontSize: '2rem',
+				background: 'rgba(0, 0, 0, 0.5)',
+			}}
+		>
+			{captions.map((line, i) => (
+				<CaptionsLine key={i} text={line.text} />
+			))}
+		</div>
+	)
+}
+
+const captionsContainerClassName = 'yttranslation-captions-Noux1oop'
+
+const CaptionsLine = ({ text }: { text: string }) => {
 	const dictionary = useRecoilValue(bidirectionalDictionary)
 	const words = text
 		.split(' ')
@@ -55,12 +91,9 @@ const TranslatedWord = ({ word, translations = [] }: TranslatedWordProps) => {
 		<Tooltip
 			opened={opened}
 			onMouseLeave={() => setOpened(false)}
-			onClick={e => {
-				//TODO stop default captions to responding to clicks (maybe replace with custom conatiner?)
-				e.preventDefault()
-				e.stopPropagation()
+			onClick={() => {
 				setFiltered(!filtered)
-				setOpened(!opened)
+				console.log('click')
 			}}
 			onMouseEnter={() => setOpened(true)}
 			color='pink'
@@ -90,7 +123,7 @@ export const CaptionsPortal = () => (
 const CaptionsObserver = () => {
 	//Use dictionary to force fetching dictionary as fast as possbile
 	useRecoilValue(bidirectionalDictionary)
-	const [captions] = useCaptionsObserver()
+	const captions = useCaptionsObserver()
 
 	return <>{captions}</>
 }
@@ -128,12 +161,10 @@ const useCaptionsObserver = (): ReactPortal[] => {
 		})
 		//Set captions to target language on video change
 		player.setCaptionsLanguage(user.targetLanguage)
-		//TODO player paused on first page load - remove in production
-		player.pauseVideo()
 		return () => observer.disconnect()
 	}, [videoId])
 
-	return replaceOriginalCaptions(captions)
+	return replaceNativeCaptions(captions, player)
 }
 
 //trimDictionaryWord trims word of special characters
@@ -195,9 +226,30 @@ const captionsMutationCallback = (
 	return callback
 }
 
-const replaceOriginalCaptions = (captions: CaptionLine[]): ReactPortal[] =>
-	captions.map(caption => captionToPortal(caption, caption.origin))
+const captionsWrapperId = 'yttranslation-captions-wrapper-Noux1oop'
+const createCaptionsWrapper = (player: WrappedYtplayer) => {
+	const exist = document.getElementById(captionsWrapperId)
+	if (exist !== null) {
+		return exist
+	}
+	const wrapper = document.createElement('div', {})
+	wrapper.setAttribute('id', captionsWrapperId)
+	player.appendChild(wrapper)
 
-//TODO should we unmount react portals?
-const captionToPortal = ({ text }: CaptionLine, target: Element): ReactPortal =>
-	ReactDOM.createPortal(<TranslatedCaptions text={text} />, target)
+	return wrapper
+}
+
+const replaceNativeCaptions = (
+	captions: CaptionLine[],
+	player: WrappedYtplayer
+): ReactPortal[] => {
+	const container = createCaptionsWrapper(player)
+	//TODO should we unmount react portals?
+	return [
+		ReactDOM.createPortal(<CaptionsContainer captions={captions} />, container),
+	]
+}
+
+//places custom captions directly in place of original ones
+// const replaceCaptionLines = (captions: CaptionLine[]): ReactPortal[] =>
+// 	captions.map(caption => ReactDOM.createPortal(<CaptionsLine text={text} />, caption.origin))

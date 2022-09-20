@@ -1,7 +1,7 @@
 //ExposedYtplayer is a interface for watever methods are availabel
 
 //to interact with the youtube player.
-export interface ExposedYtplayer {
+export interface ExposedYtplayer extends HTMLDivElement {
 	getVideoData(): { video_id: string }
 	pauseVideo(): void
 	playVideo(): void
@@ -48,14 +48,14 @@ export async function getYtplayer(): Promise<WrappedYtplayer> {
 }
 
 //wrapYtplayer wraps the player object and adds some extra methods.
-const wrapYtplayer = (player: ExposedYtplayer): WrappedYtplayer => ({
-	...player,
-	getCaptionsContainer: () =>
-		document.getElementById(player.getCaptionWindowContainerId()),
+const wrapYtplayer = (player: ExposedYtplayer): WrappedYtplayer =>
+	Object.assign(player, {
+		getCaptionsContainer: () =>
+			document.getElementById(player.getCaptionWindowContainerId()),
 
-	//setCaptionsLanguage changes the language of the captions.
-	//use getOption('captions', 'tracklist') to get the list of available languages.
-	setCaptionsLanguage(language: string) {
-		player.setOption('captions', 'track', { languageCode: language })
-	},
-})
+		//setCaptionsLanguage changes the language of the captions.
+		//use getOption('captions', 'tracklist') to get the list of available languages.
+		setCaptionsLanguage(language: string) {
+			player.setOption('captions', 'track', { languageCode: language })
+		},
+	})
