@@ -1,12 +1,12 @@
 ## In Progress
-	- subtitles container should stay in one vertical position (bottom bar now makes it jump around)
-
 ## Sprint
-	- Fix words flickering when tooltip appear
 	- load dictionaries from temporary repository on github
+		- use separate endpoint to detect if dictionary update necessary (use patches?)
 	- Show native and target language captions at the same time.
 	- Perpare portuese/russian dictionaries
 	### Completed in sprint
+	+ Fix words flickering when tooltip appear
+	+ subtitles container should stay in one vertical position (bottom bar now makes it jump around)
 	+ Monitor video_id, when changed - re-initialize captions observer.
 	+ Setup learning target language
 	+ Set captions to target langugage automatically (if captions exist)

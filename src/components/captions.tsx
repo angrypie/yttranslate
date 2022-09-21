@@ -14,32 +14,35 @@ interface CaptionsContainerProps {
 }
 
 const CaptionsContainer = ({ captions }: CaptionsContainerProps) => {
-	React.useEffect(() => {
-		//add event listener to captionsContainerClassNames
-		setTimeout(() => {
-			Array.from(
-				document.getElementsByClassName(captionsContainerClassName)
-			).forEach(node =>
-				node.addEventListener('click', () => {
-					alert('clicked')
-				})
-			)
-		}, 200)
-	}, [captions])
 	return (
 		<div
 			style={{
 				display: 'flex',
-				flexDirection: 'column',
-				position: 'relative',
-				zIndex: '300',
+				justifyContent: 'center',
+				position: 'absolute',
+				width: '100%',
+				height: '100%',
 				fontSize: '2rem',
-				background: 'rgba(0, 0, 0, 0.5)',
+				top: '0',
 			}}
 		>
-			{captions.map((line, i) => (
-				<CaptionsLine key={i} text={line.text} />
-			))}
+			<div
+				style={{
+					display: 'flex',
+					flexDirection: 'column',
+					position: 'absolute',
+					alignItems: 'center',
+					padding: '0.5em 1em',
+					zIndex: '300',
+					bottom: '15%',
+					fontSize: '1em',
+					background: 'rgba(0, 0, 0, 0.5)',
+				}}
+			>
+				{captions.map((line, i) => (
+					<CaptionsLine key={i} text={line.text} />
+				))}
+			</div>
 		</div>
 	)
 }
@@ -93,13 +96,13 @@ const TranslatedWord = ({ word, translations = [] }: TranslatedWordProps) => {
 			onMouseLeave={() => setOpened(false)}
 			onClick={() => {
 				setFiltered(!filtered)
-				console.log('click')
 			}}
 			onMouseEnter={() => setOpened(true)}
 			color='pink'
 			style={{
 				fontSize: '1em',
 				display: 'flex',
+				alignItems: 'center',
 				flexDirection: 'column-reverse',
 			}}
 			offset={30}
