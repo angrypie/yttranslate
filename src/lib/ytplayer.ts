@@ -36,8 +36,6 @@ export async function getYtplayer(): Promise<WrappedYtplayer> {
 			if (player === null) {
 				return
 			}
-			//change captions for youtube player
-			player.setAttribute('cc_load_policy', '1')
 			if (!isExposedYtplayer(player)) {
 				throw Error('"youtube movie_player found but not supported"')
 			}
@@ -59,3 +57,35 @@ const wrapYtplayer = (player: ExposedYtplayer): WrappedYtplayer =>
 			player.setOption('captions', 'track', { languageCode: language })
 		},
 	})
+
+interface Transcript {
+	languageCode: string
+	texts: { time: number; duration: number; text: string }[]
+}
+
+export const getTranscript = async (languageCode: string): Promise<Transcript> => {
+	//@ts-ignore
+	const tracks = window.ytplayer.config.args.raw_player_response.captions
+		.playerCaptionsTracklistRenderer.captionTracks as {
+		baseUrl: string
+		languageCode: string
+	}[]
+	const track = tracks.find(track => track.languageCode === languageCode)
+	if (track === undefined) {
+		throw Error('Track not found')
+	}
+	const url = `${track.baseUrl}&fmt=json3`
+	const resp = await fetch(url)
+	const data = await resp.json()
+
+	const texts = data.events.map((event: any) => ({
+		time: event.tStartMs,
+		duration: event.dDurationMs,
+		text: event.segs[0].utf8,
+	}))
+
+	return {
+		languageCode,
+		texts,
+	}
+}

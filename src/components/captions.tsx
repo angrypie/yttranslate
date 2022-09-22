@@ -7,7 +7,7 @@ import ReactDOM from 'react-dom'
 import { Translation } from 'lib/dictionary'
 import { Space } from 'components//text'
 import { userConfig } from 'store/user'
-import { WrappedYtplayer } from 'lib/ytplayer'
+import { getTranscript, WrappedYtplayer } from 'lib/ytplayer'
 
 interface CaptionsContainerProps {
 	captions: CaptionLine[]
@@ -162,8 +162,10 @@ const useCaptionsObserver = (): ReactPortal[] => {
 			childList: true,
 			subtree: true,
 		})
-		//Set captions to target language on video change
+		//TODO use downloaded captions instead of mutation observer (maybe keep observer for faster first load)
 		player.setCaptionsLanguage(user.targetLanguage)
+		//Set captions to target language on video change
+		getTranscript("en").then((transcript) => {console.log(transcript)})
 		return () => observer.disconnect()
 	}, [videoId])
 
