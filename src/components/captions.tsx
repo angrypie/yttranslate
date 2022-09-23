@@ -1,20 +1,23 @@
 import { Tooltip } from '@mantine/core'
 import { useRecoilValue } from 'recoil'
-import { ytplayer, ytVideoId } from 'store/player'
+import { ytDisplayedCaptions, ytplayer, ytVideoId } from 'store/player'
 import { bidirectionalDictionary } from 'store/dictionary'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Translation } from 'lib/dictionary'
 import { Space } from 'components//text'
 import { userConfig } from 'store/user'
-import { getTranscript, WrappedYtplayer } from 'lib/ytplayer'
+import { WrappedYtplayer } from 'lib/ytplayer'
 
 interface CaptionsContainerProps {
 }
 
+
 const CaptionsContainer = ({}: CaptionsContainerProps) => {
-	console.log("update captions container")
-	const [captions] = useCaptionsObserver()
+	// const [captions] = useCaptionsObserver()
+	const displayed = useRecoilValue(ytDisplayedCaptions)
+	console.log("update caption container")
+	const captions = [{ text: displayed}]
 	return (
 		<div
 			style={{

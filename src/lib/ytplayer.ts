@@ -58,12 +58,19 @@ const wrapYtplayer = (player: ExposedYtplayer): WrappedYtplayer =>
 		},
 	})
 
+export interface TranscriptEntry {
+	time: number
+	duration: number
+	text: string
+}
+
 interface Transcript {
 	languageCode: string
-	texts: { time: number; duration: number; text: string }[]
+	texts: TranscriptEntry[]
 }
 
 export const getTranscript = async (languageCode: string): Promise<Transcript> => {
+	console.log("loading transcript")
 	//@ts-ignore
 	const tracks = window.ytplayer.config.args.raw_player_response.captions
 		.playerCaptionsTracklistRenderer.captionTracks as {

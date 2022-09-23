@@ -1,8 +1,8 @@
 ## In Progress
+	- Show native and target language captions at the same time.
 ## Sprint
 	- load dictionaries from temporary repository on github
 		- use separate endpoint to detect if dictionary update necessary (use patches?)
-	- Show native and target language captions at the same time.
 	- Perpare portuese/russian dictionaries
 	### Completed in sprint
 	+ Fix words flickering when tooltip appear

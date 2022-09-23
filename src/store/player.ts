@@ -1,5 +1,6 @@
+import { getTranscript, getYtplayer, TranscriptEntry } from 'lib/ytplayer'
 import { atom, selector } from 'recoil'
-import { getYtplayer } from 'lib/ytplayer'
+import { userConfig } from './user'
 
 export const ytplayer = selector({
 	key: 'ytplayer',
@@ -26,7 +27,7 @@ export const ytplayerTime = selector({
 	get: ({ get }) => {
 		get(currentTime) //making selector re-run everytime currentTime changes
 		const player = get(ytplayer)
-		return player.getCurrentTime()
+		return player.getCurrentTime() * 1000
 	},
 })
 
@@ -38,5 +39,35 @@ export const ytVideoId = selector({
 		get(currentTime) //making selector re-run everytime currentTime changes
 		const player = get(ytplayer)
 		return player.getVideoData().video_id
+	},
+})
+
+//ytVideoCaptions is the captions for the current video
+export const ytVideoCaptions = selector({
+	key: 'ytVideoCaptions',
+	get: async ({ get }) => {
+		get(ytVideoId) //make selector re-run everytime the video changes
+		//TODO rerun only when languageCode changes
+		const user = get(userConfig) //r-run when user config changes
+		return getTranscript(user.targetLanguage)
+	},
+})
+
+//ytCurrentCaptions is the captions that should be displayed based on current view progress
+export const ytDisplayedCaptions = selector({
+	key: 'ytCurrentCaptions',
+	get: ({ get }) => {
+		const current = get(ytplayerTime)
+		const transcripts = get(ytVideoCaptions).texts
+
+
+		//TODO find faster way to search for next caption line, maybe map with time as key?
+		const transcript = transcripts.find(({ time, duration}) =>
+			current > time && time + duration > current
+		)
+		if (transcript === undefined) {
+			return '<no captions>'
+		}
+		return transcript.text
 	},
 })

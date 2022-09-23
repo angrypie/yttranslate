@@ -82,5 +82,5 @@ function UserSettingsForm() {
 
 function PlayerTime() {
 	const time = useRecoilValue(ytplayerTime)
-	return <Text>{time.toFixed()}</Text>
+	return <Text>{(time / 1000).toFixed()}</Text>
 }
