@@ -10,10 +10,11 @@ import { userConfig } from 'store/user'
 import { getTranscript, WrappedYtplayer } from 'lib/ytplayer'
 
 interface CaptionsContainerProps {
-	captions: CaptionLine[]
 }
 
-const CaptionsContainer = ({ captions }: CaptionsContainerProps) => {
+const CaptionsContainer = ({}: CaptionsContainerProps) => {
+	console.log("update captions container")
+	const [captions] = useCaptionsObserver()
 	return (
 		<div
 			style={{
@@ -116,20 +117,26 @@ const TranslatedWord = ({ word, translations = [] }: TranslatedWordProps) => {
 	)
 }
 
-export const CaptionsPortal = () => (
-	//do not hang all components tree waiting for dictionaries to be ready
+export const Captions = () => (
 	<React.Suspense fallback={null}>
-		<CaptionsObserver />
+		<CaptionsPortal />
 	</React.Suspense>
 )
 
-const CaptionsObserver = () => {
-	//Use dictionary to force fetching dictionary as fast as possbile
-	useRecoilValue(bidirectionalDictionary)
-	const captions = useCaptionsObserver()
+export const CaptionsPortal = () => {
+	const player = useRecoilValue(ytplayer)
+	const videoId = useRecoilValue(ytVideoId)
+	const user = useRecoilValue(userConfig)
 
-	return <>{captions}</>
-}
+	React.useEffect(() => {
+		player.setCaptionsLanguage(user.targetLanguage)
+	}, [videoId])
+
+	const [captionsPortal] = useReplaceNativeCaptions(player)
+	return <>{captionsPortal}</>
+
+} 
+
 
 type ReactPortal = ReturnType<typeof ReactDOM.createPortal>
 
@@ -138,13 +145,10 @@ interface CaptionLine {
 	origin: Element
 }
 
-//useCaptionsObserver watches for captions replace them with translatable ones
-//and return portals to render them and substitute original ones
-//To change relacing captions strategy change captionsToPortals(...)
+//useCaptionsObserver watches for captions
 //To adapt to another player also change captionsMutationCallback(...)
-const useCaptionsObserver = (): ReactPortal[] => {
+const useCaptionsObserver = (): [CaptionLine[]] => {
 	const player = useRecoilValue(ytplayer)
-	const user = useRecoilValue(userConfig)
 	const videoId = useRecoilValue(ytVideoId)
 
 	// const [captions, setCaptions] = React.useState<ReactPortal[]>([])
@@ -157,19 +161,16 @@ const useCaptionsObserver = (): ReactPortal[] => {
 			console.log("WARN Can't find captions container")
 			return
 		}
-		console.log('captions container', container)
+		console.log('update captions container', container)
 		observer.observe(container, {
 			childList: true,
 			subtree: true,
 		})
 		//TODO use downloaded captions instead of mutation observer (maybe keep observer for faster first load)
-		player.setCaptionsLanguage(user.targetLanguage)
-		//Set captions to target language on video change
-		getTranscript("en").then((transcript) => {console.log(transcript)})
 		return () => observer.disconnect()
 	}, [videoId])
 
-	return replaceNativeCaptions(captions, player)
+	return [captions]
 }
 
 //trimDictionaryWord trims word of special characters
@@ -244,14 +245,11 @@ const createCaptionsWrapper = (player: WrappedYtplayer) => {
 	return wrapper
 }
 
-const replaceNativeCaptions = (
-	captions: CaptionLine[],
-	player: WrappedYtplayer
-): ReactPortal[] => {
+const useReplaceNativeCaptions = (player: WrappedYtplayer): ReactPortal[] => {
 	const container = createCaptionsWrapper(player)
 	//TODO should we unmount react portals?
 	return [
-		ReactDOM.createPortal(<CaptionsContainer captions={captions} />, container),
+		ReactDOM.createPortal(<CaptionsContainer />, container),
 	]
 }
 

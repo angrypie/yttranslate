@@ -22,7 +22,7 @@ export interface Dictionary {
 	get(word: string): Translation[]
 }
 
-export async function fetchDictionary() {
+export async function fetchDictionary(): Promise<Dictionary> {
 	const serialMap = await get('pt-en')
 
 	const pairs = await match(serialMap)
@@ -92,7 +92,7 @@ async function FuzzyDictionary(pairs: [string, Translation[]][]) {
 
 			if (db === null) {
 				console.log('fuzzy search is not ready')
-				return
+				return []
 			}
 
 			const results = search(db, { term: word, properties: '*', limit: 1000 })
