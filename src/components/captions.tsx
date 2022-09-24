@@ -1,6 +1,6 @@
 import { Tooltip } from '@mantine/core'
 import { useRecoilValue } from 'recoil'
-import { ytDisplayedCaptions, ytplayer, ytVideoId } from 'store/player'
+import { ytContentWidth, ytDisplayedCaptions, ytplayer, ytVideoId } from 'store/player'
 import { bidirectionalDictionary } from 'store/dictionary'
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -9,15 +9,9 @@ import { Space } from 'components//text'
 import { userConfig } from 'store/user'
 import { WrappedYtplayer } from 'lib/ytplayer'
 
-interface CaptionsContainerProps {
-}
+const captionsContainerClassName = 'yttranslation-captions-Noux1oop'
 
-
-const CaptionsContainer = ({}: CaptionsContainerProps) => {
-	// const [captions] = useCaptionsObserver()
-	const displayed = useRecoilValue(ytDisplayedCaptions)
-	console.log("update caption container")
-	const captions = [{ text: displayed}]
+const CaptionsContainer = () => {
 	return (
 		<div
 			style={{
@@ -26,34 +20,59 @@ const CaptionsContainer = ({}: CaptionsContainerProps) => {
 				position: 'absolute',
 				width: '100%',
 				height: '100%',
-				fontSize: '2rem',
 				top: '0',
 			}}
 		>
-			<div
-				style={{
-					display: 'flex',
-					flexDirection: 'column',
-					position: 'absolute',
-					alignItems: 'center',
-					padding: '0.5em 1em',
-					zIndex: '300',
-					bottom: '15%',
-					fontSize: '1em',
-					background: 'rgba(0, 0, 0, 0.5)',
-				}}
-			>
-				{captions.map((line, i) => (
-					<CaptionsLine key={i} text={line.text} />
-				))}
-			</div>
+			<CaptionsDisplayArea />
 		</div>
 	)
 }
 
-const captionsContainerClassName = 'yttranslation-captions-Noux1oop'
+const CaptionsDisplayArea = () => {
+	const user = useRecoilValue(userConfig)
+	const targetLine = useRecoilValue(ytDisplayedCaptions(user.targetLanguage))
+	const nativeLine = useRecoilValue(ytDisplayedCaptions(user.nativeLanguage))
+	const videoContentWidth = useRecoilValue(ytContentWidth)
+	console.log('======= update caption display area =======')
+	return (
+		<div
+			style={{
+				display: 'flex',
+				flexDirection: 'column',
+				alignItems: 'center',
+				position: 'absolute',
+				fontSize: '1.8rem',
+				bottom: '10%',
+				width: `${Math.round(videoContentWidth * 0.75)}px`,
+			}}
 
-const CaptionsLine = ({ text }: { text: string }) => {
+		>
+			<CaptionLine>
+				<TranslatedCaption text={targetLine} />
+			</CaptionLine>
+			<br />
+			<CaptionLine>{nativeLine}</CaptionLine>
+		</div>
+	)
+}
+
+const CaptionLine = ({ children }: { children: React.ReactNode }) => {
+	return (
+		<div
+			style={{
+				position: 'relative',
+				zIndex: '300',
+				padding: '0.5em 1em',
+				background: 'rgba(0, 0, 0, 0.5)',
+				textAlign: 'center',
+			}}
+		>
+			{children}
+		</div>
+	)
+}
+
+const TranslatedCaption = ({ text }: { text: string }) => {
 	const dictionary = useRecoilValue(bidirectionalDictionary)
 	const words = text
 		.split(' ')
@@ -65,7 +84,11 @@ const CaptionsLine = ({ text }: { text: string }) => {
 			/>
 		))
 
-	return <span className={captionsContainerClassName}>{words}</span>
+	return (
+		<span style={{ fontWeight: 'bold', fontSize: '1.3em' }} className={captionsContainerClassName}>
+			{words}
+		</span>
+	)
 }
 
 interface TranslatedWordProps {
@@ -121,6 +144,7 @@ const TranslatedWord = ({ word, translations = [] }: TranslatedWordProps) => {
 }
 
 export const Captions = () => (
+	//Captions portal must be wrrapped in Suspense
 	<React.Suspense fallback={null}>
 		<CaptionsPortal />
 	</React.Suspense>
@@ -137,9 +161,7 @@ export const CaptionsPortal = () => {
 
 	const [captionsPortal] = useReplaceNativeCaptions(player)
 	return <>{captionsPortal}</>
-
-} 
-
+}
 
 type ReactPortal = ReturnType<typeof ReactDOM.createPortal>
 
@@ -150,7 +172,7 @@ interface CaptionLine {
 
 //useCaptionsObserver watches for captions
 //To adapt to another player also change captionsMutationCallback(...)
-const useCaptionsObserver = (): [CaptionLine[]] => {
+export const useCaptionsObserver = (): [CaptionLine[]] => {
 	const player = useRecoilValue(ytplayer)
 	const videoId = useRecoilValue(ytVideoId)
 
@@ -251,9 +273,7 @@ const createCaptionsWrapper = (player: WrappedYtplayer) => {
 const useReplaceNativeCaptions = (player: WrappedYtplayer): ReactPortal[] => {
 	const container = createCaptionsWrapper(player)
 	//TODO should we unmount react portals?
-	return [
-		ReactDOM.createPortal(<CaptionsContainer />, container),
-	]
+	return [ReactDOM.createPortal(<CaptionsContainer />, container)]
 }
 
 //places custom captions directly in place of original ones

@@ -1,7 +1,6 @@
-import { Affix, Button, Modal, Select, Text } from '@mantine/core'
+import { Affix, Button, Modal, Select } from '@mantine/core'
 import { IconLanguage } from '@tabler/icons'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { ytplayerTime } from 'store/player'
+import { useRecoilState } from 'recoil'
 import React from 'react'
 import { userConfig } from 'store/user'
 
@@ -30,7 +29,7 @@ const MenuButton = () => {
 				onClick={() => setOpened(true)}
 				leftIcon={<IconLanguage size={16} />}
 			>
-				Settings ({<PlayerTime />}s)
+				Settings
 			</Button>
 		</>
 	)
@@ -78,9 +77,4 @@ function UserSettingsForm() {
 			</Button>
 		</>
 	)
-}
-
-function PlayerTime() {
-	const time = useRecoilValue(ytplayerTime)
-	return <Text>{(time / 1000).toFixed()}</Text>
 }

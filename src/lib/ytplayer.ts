@@ -7,6 +7,12 @@ export interface ExposedYtplayer extends HTMLDivElement {
 	playVideo(): void
 	getCurrentTime(): number
 	getCaptionWindowContainerId(): string
+	getVideoContentRect(): {
+		left: number
+		top: number
+		width: number
+		height: number
+	}
 	getOption(module: string, option: string): any
 	setOption(module: string, option: string, value: any): void
 }
@@ -69,8 +75,10 @@ interface Transcript {
 	texts: TranscriptEntry[]
 }
 
-export const getTranscript = async (languageCode: string): Promise<Transcript> => {
-	console.log("loading transcript")
+export const getTranscript = async (
+	languageCode: string
+): Promise<Transcript> => {
+	console.log('loading transcript')
 	//@ts-ignore
 	const tracks = window.ytplayer.config.args.raw_player_response.captions
 		.playerCaptionsTracklistRenderer.captionTracks as {
