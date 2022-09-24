@@ -1,13 +1,18 @@
-import { Tooltip } from '@mantine/core'
 import { useRecoilValue } from 'recoil'
-import { ytContentWidth, ytDisplayedCaptions, ytplayer, ytVideoId } from 'store/player'
+import {
+	ytContentWidth,
+	ytDisplayedCaptions,
+	ytplayer,
+	ytVideoId,
+} from 'store/player'
 import { bidirectionalDictionary } from 'store/dictionary'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Translation } from 'lib/dictionary'
-import { Space } from 'components//text'
 import { userConfig } from 'store/user'
 import { WrappedYtplayer } from 'lib/ytplayer'
+import { Tooltip } from 'components/popover'
+import { Space } from './text'
 
 const captionsContainerClassName = 'yttranslation-captions-Noux1oop'
 
@@ -45,7 +50,6 @@ const CaptionsDisplayArea = () => {
 				bottom: '10%',
 				width: `${Math.round(videoContentWidth * 0.75)}px`,
 			}}
-
 		>
 			<CaptionLine>
 				<TranslatedCaption text={targetLine} />
@@ -85,7 +89,10 @@ const TranslatedCaption = ({ text }: { text: string }) => {
 		))
 
 	return (
-		<span style={{ fontWeight: 'bold', fontSize: '1.3em' }} className={captionsContainerClassName}>
+		<span
+			style={{ fontWeight: 'bold', fontSize: '1.3em' }}
+			className={captionsContainerClassName}
+		>
 			{words}
 		</span>
 	)
@@ -98,18 +105,17 @@ interface TranslatedWordProps {
 
 //TODO show only most correct translation variants
 const TranslatedWord = ({ word, translations = [] }: TranslatedWordProps) => {
-	const [opened, setOpened] = React.useState(false)
 	const [filtered, setFiltered] = React.useState(true)
 
 	//for now show only first 4 words on hover and rest on click
-	const label = translations
+	const labels = translations
 		.sort((a, b) => b[1] - a[1])
 		.slice(0, filtered ? 3 : translations.length)
 		.map(([variant], i) => (
 			<div
 				key={i}
 				style={{
-					fontSize: i === 0 ? '.9em' : '.6em',
+					fontSize: i === 0 ? '1.2em' : '.8em',
 					color: i === 0 ? 'white' : 'lightgray',
 					fontWeight: i === 0 ? 600 : 400,
 				}}
@@ -117,28 +123,28 @@ const TranslatedWord = ({ word, translations = [] }: TranslatedWordProps) => {
 				{variant}
 			</div>
 		))
+
+	const onClick = () => setFiltered(!filtered)
+
+	const label = labels.length === 0 ? word : labels
 	return (
 		<Tooltip
-			opened={opened}
-			onMouseLeave={() => setOpened(false)}
-			onClick={() => {
-				setFiltered(!filtered)
-			}}
-			onMouseEnter={() => setOpened(true)}
-			color='pink'
-			style={{
-				fontSize: '1em',
-				display: 'flex',
-				alignItems: 'center',
-				flexDirection: 'column-reverse',
-			}}
-			offset={30}
-			label={label.length === 0 ? word : label}
+			trigger={
+				<span onClick={onClick} style={{ cursor: 'pointer' }}>
+					{word}
+					<Space />
+				</span>
+			}
 		>
-			<span style={{ cursor: 'pointer' }}>
-				{word}
-				<Space />
-			</span>
+			<div
+				style={{
+					display: 'flex',
+					alignItems: 'center',
+					flexDirection: 'column-reverse',
+				}}
+			>
+				{label}
+			</div>
 		</Tooltip>
 	)
 }
