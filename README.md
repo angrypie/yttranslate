@@ -1,11 +1,11 @@
 ## In Progress
-	- Fix words flickering when tooltip appear
+	- Adapt captions fontSize to plyaer size
 ## Sprint
 	- load dictionaries from temporary repository on github
 		- use separate endpoint to detect if dictionary update necessary (use patches?)
 	- Perpare portuese/russian dictionaries
-	- Adapt captions fontSize to plyaer size
 	### Completed in sprint
+	+ Fix words flickering when tooltip appear
 	+ Show native and target language captions at the same time.
 	+ subtitles container should stay in one vertical position (bottom bar now makes it jump around)
 	+ Monitor video_id, when changed - re-initialize captions observer.

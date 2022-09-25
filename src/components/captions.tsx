@@ -38,6 +38,9 @@ const CaptionsDisplayArea = () => {
 	const targetLine = useRecoilValue(ytDisplayedCaptions(user.targetLanguage))
 	const nativeLine = useRecoilValue(ytDisplayedCaptions(user.nativeLanguage))
 	const videoContentWidth = useRecoilValue(ytContentWidth)
+	if (targetLine === '' || nativeLine === '') {
+		return null
+	}
 	console.log('======= update caption display area =======')
 	return (
 		<div
@@ -46,7 +49,7 @@ const CaptionsDisplayArea = () => {
 				flexDirection: 'column',
 				alignItems: 'center',
 				position: 'absolute',
-				fontSize: '1.8rem',
+				fontSize: '2.2rem',
 				bottom: '10%',
 				width: `${Math.round(videoContentWidth * 0.75)}px`,
 			}}
@@ -54,8 +57,9 @@ const CaptionsDisplayArea = () => {
 			<CaptionLine>
 				<TranslatedCaption text={targetLine} />
 			</CaptionLine>
-			<br />
-			<CaptionLine>{nativeLine}</CaptionLine>
+			<div style={{ marginTop: '0.5em' }}>
+				<CaptionLine>{nativeLine}</CaptionLine>
+			</div>
 		</div>
 	)
 }
@@ -66,7 +70,7 @@ const CaptionLine = ({ children }: { children: React.ReactNode }) => {
 			style={{
 				position: 'relative',
 				zIndex: '300',
-				padding: '0.5em 1em',
+				padding: '0.2em 0.5em',
 				background: 'rgba(0, 0, 0, 0.5)',
 				textAlign: 'center',
 			}}
@@ -78,7 +82,10 @@ const CaptionLine = ({ children }: { children: React.ReactNode }) => {
 
 const TranslatedCaption = ({ text }: { text: string }) => {
 	const dictionary = useRecoilValue(bidirectionalDictionary)
+	//split string by new-lines and spaces and map word to translated
 	const words = text
+		.split('\n')
+		.join(' ')
 		.split(' ')
 		.map((word, i) => (
 			<TranslatedWord
@@ -115,9 +122,9 @@ const TranslatedWord = ({ word, translations = [] }: TranslatedWordProps) => {
 			<div
 				key={i}
 				style={{
-					fontSize: i === 0 ? '1.2em' : '.8em',
+					fontSize: i === 0 ? '1.5em' : '1.1em',
 					color: i === 0 ? 'white' : 'lightgray',
-					fontWeight: i === 0 ? 600 : 400,
+					fontWeight: i === 0 ? 700 : 400,
 				}}
 			>
 				{variant}

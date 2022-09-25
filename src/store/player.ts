@@ -71,7 +71,7 @@ export const ytDisplayedCaptions = selectorFamily({
 				({ time, duration }) => current > time && time + duration > current
 			)
 			if (transcript === undefined) {
-				return '<no captions>'
+				return ''
 			}
 			return transcript.text
 		},

@@ -36,7 +36,7 @@ export const Tooltip = ({
 				{trigger}
 			</PopoverTrigger>
 		<PopoverPrimitive.Portal>
-			<StyledContent side='top'>
+			<StyledContent side='top' sideOffset={4}>
 				{children}
 				<StyledArrow />
 			</StyledContent>

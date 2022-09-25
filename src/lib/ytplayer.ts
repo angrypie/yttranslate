@@ -96,7 +96,7 @@ export const getTranscript = async (
 	const texts = data.events.map((event: any) => ({
 		time: event.tStartMs,
 		duration: event.dDurationMs,
-		text: event.segs[0].utf8,
+		text: event.segs[0].utf8, //TODO handle multiple segments
 	}))
 
 	return {

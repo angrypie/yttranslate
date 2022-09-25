@@ -1,1 +1,1 @@
-export const Space = () => <span>&nbsp;</span>
+export const Space = () => <span> </span>
