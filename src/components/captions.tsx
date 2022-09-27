@@ -37,10 +37,14 @@ const CaptionsDisplayArea = () => {
 	const user = useRecoilValue(userConfig)
 	const targetLine = useRecoilValue(ytDisplayedCaptions(user.targetLanguage))
 	const nativeLine = useRecoilValue(ytDisplayedCaptions(user.nativeLanguage))
-	const videoContentWidth = useRecoilValue(ytContentWidth)
+	const contentW = useRecoilValue(ytContentWidth)
 	if (targetLine === '' || nativeLine === '') {
 		return null
 	}
+
+	const width = contentW < 700 ? contentW : 0.5 * contentW + 350
+	const fontSize = contentW < 700 ? 1.5 : 1.5 + (contentW - 700) / 1000
+
 	console.log('======= update caption display area =======')
 	return (
 		<div
@@ -49,9 +53,9 @@ const CaptionsDisplayArea = () => {
 				flexDirection: 'column',
 				alignItems: 'center',
 				position: 'absolute',
-				fontSize: '2.2rem',
+				fontSize: `${fontSize.toFixed(2)}rem`,
 				bottom: '10%',
-				width: `${Math.round(videoContentWidth * 0.75)}px`,
+				width: `${Math.round(width)}px`,
 			}}
 		>
 			<CaptionLine>

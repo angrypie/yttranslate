@@ -1,10 +1,11 @@
 ## In Progress
-	- Adapt captions fontSize to plyaer size
+	- Allow to select main subtitles to use third-party translation extensios.
 ## Sprint
 	- load dictionaries from temporary repository on github
 		- use separate endpoint to detect if dictionary update necessary (use patches?)
 	- Perpare portuese/russian dictionaries
 	### Completed in sprint
+	+ Adapt captions fontSize and it's container width to player content width
 	+ Fix words flickering when tooltip appear
 	+ Show native and target language captions at the same time.
 	+ subtitles container should stay in one vertical position (bottom bar now makes it jump around)
