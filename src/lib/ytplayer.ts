@@ -70,26 +70,30 @@ export interface TranscriptEntry {
 	text: string
 }
 
-interface Transcript {
+export interface Transcript {
 	languageCode: string
 	texts: TranscriptEntry[]
 }
 
-export const getTranscript = async (
+export type CaptionTrack = {
 	languageCode: string
-): Promise<Transcript> => {
-	console.log('loading transcript')
+	baseUrl: string
+}
+
+export function getAvailableCaptionTracks(): CaptionTrack[] {
 	//@ts-ignore
-	const tracks = window.ytplayer.config.args.raw_player_response.captions
-		.playerCaptionsTracklistRenderer.captionTracks as {
-		baseUrl: string
-		languageCode: string
-	}[]
-	const track = tracks.find(track => track.languageCode === languageCode)
-	if (track === undefined) {
-		throw Error('Track not found')
+	if (window?.ytplayer === undefined) {
+		return []
 	}
-	const url = `${track.baseUrl}&fmt=json3`
+	//@ts-ignore
+	return window.ytplayer.config.args.raw_player_response.captions
+		.playerCaptionsTracklistRenderer.captionTracks
+}
+
+export async function getTranscript(track: CaptionTrack): Promise<Transcript> {
+	const { baseUrl, languageCode } = track
+	console.log('loading transcript')
+	const url = `${baseUrl}&fmt=json3`
 	const resp = await fetch(url)
 	const data = await resp.json()
 

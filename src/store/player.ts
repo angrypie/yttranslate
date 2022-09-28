@@ -1,4 +1,8 @@
-import { getTranscript, getYtplayer } from 'lib/ytplayer'
+import {
+	getAvailableCaptionTracks,
+	getTranscript,
+	getYtplayer,
+} from 'lib/ytplayer'
 import { atom, selector, selectorFamily } from 'recoil'
 
 export const ytplayer = selector({
@@ -43,15 +47,27 @@ export const ytVideoId = selector({
 })
 
 //ytVideoCaptions is the captions for the current video
+export const ytAvailableCaptions = selector({
+	key: 'ytAvailableCaptions',
+	get: ({ get }) => {
+		get(ytVideoId) //make selector re-run everytime the video changes
+		return getAvailableCaptionTracks()
+	},
+})
+
+//ytVideoCaptions is the captions for the current video
 export const ytVideoCaptions = selectorFamily({
 	key: 'ytVideoCaptions',
 	get:
 		(languageCode: string) =>
 		async ({ get }) => {
 			get(ytVideoId) //make selector re-run everytime the video changes
-			//TODO rerun only when languageCode changes
-			// const user = get(userConfig) //r-run when user config changes
-			return getTranscript(languageCode)
+			const available = get(ytAvailableCaptions)
+			const track = available.find(track => track.languageCode === languageCode)
+			if (track === undefined) {
+				return undefined
+			}
+			return getTranscript(track)
 		},
 })
 
@@ -63,17 +79,20 @@ export const ytDisplayedCaptions = selectorFamily({
 		(languageCode: string) =>
 		({ get }) => {
 			const current = get(ytplayerTime)
-			const transcripts = get(ytVideoCaptions(languageCode)).texts
-
-			//TODO find faster way to search for next caption line
-			//maybe arrayt with time (100 ms step) as index?
-			const transcript = transcripts.find(
-				({ time, duration }) => current > time && time + duration > current
-			)
+			const transcript = get(ytVideoCaptions(languageCode))
 			if (transcript === undefined) {
 				return ''
 			}
-			return transcript.text
+
+			//TODO find faster way to search for next caption line
+			//maybe arrayt with time (100 ms step) as index?
+			const entry = transcript.texts.find(
+				({ time, duration }) => current > time && time + duration > current
+			)
+			if (entry === undefined) {
+				return ''
+			}
+			return entry.text
 		},
 })
 
