@@ -25,22 +25,24 @@ export const Tooltip = ({
 	trigger: React.ReactNode
 }) => {
 	const [open, setOpen] = React.useState(false)
+	const triggerRef = React.useRef<HTMLButtonElement>(null)
 
 	return (
 		<PopoverRoot open={open}>
 			<PopoverTrigger
+				ref={triggerRef}
 				onMouseEnter={() => setOpen(true)}
 				onMouseLeave={() => setOpen(false)}
-				asChild
+				asChild={true}
 			>
 				{trigger}
 			</PopoverTrigger>
-		<PopoverPrimitive.Portal>
-			<StyledContent side='top' sideOffset={4}>
-				{children}
-				<StyledArrow />
-			</StyledContent>
-		</PopoverPrimitive.Portal>
+			<PopoverPrimitive.Portal container={triggerRef.current}>
+				<StyledContent side='top' sideOffset={8}>
+					{children}
+					<StyledArrow />
+				</StyledContent>
+			</PopoverPrimitive.Portal>
 		</PopoverRoot>
 	)
 }

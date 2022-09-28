@@ -38,7 +38,7 @@ const CaptionsDisplayArea = () => {
 	const targetLine = useRecoilValue(ytDisplayedCaptions(user.targetLanguage))
 	const nativeLine = useRecoilValue(ytDisplayedCaptions(user.nativeLanguage))
 	const contentW = useRecoilValue(ytContentWidth)
-	if (targetLine === '' || nativeLine === '') {
+	if (targetLine === '' && nativeLine === '') {
 		return null
 	}
 
@@ -86,17 +86,20 @@ const CaptionLine = ({ children }: { children: React.ReactNode }) => {
 
 const TranslatedCaption = ({ text }: { text: string }) => {
 	const dictionary = useRecoilValue(bidirectionalDictionary)
-	//split string by new-lines and spaces and map word to translated
+	// split string by new-lines and spaces and map word to translated
 	const words = text
 		.split('\n')
 		.join(' ')
 		.split(' ')
 		.map((word, i) => (
-			<TranslatedWord
-				key={i}
-				word={word}
-				translations={dictionary.get(trimDictionaryWord(word).toLowerCase())}
-			/>
+			<>
+				<TranslatedWord
+					key={i}
+					word={word}
+					translations={dictionary.get(trimDictionaryWord(word).toLowerCase())}
+				/>
+				<Space />
+			</>
 		))
 
 	return (
@@ -126,7 +129,7 @@ const TranslatedWord = ({ word, translations = [] }: TranslatedWordProps) => {
 			<div
 				key={i}
 				style={{
-					fontSize: i === 0 ? '1.5em' : '1.1em',
+					fontSize: i === 0 ? '1em' : '0.8em',
 					color: i === 0 ? 'white' : 'lightgray',
 					fontWeight: i === 0 ? 700 : 400,
 				}}
@@ -143,7 +146,6 @@ const TranslatedWord = ({ word, translations = [] }: TranslatedWordProps) => {
 			trigger={
 				<span onClick={onClick} style={{ cursor: 'pointer' }}>
 					{word}
-					<Space />
 				</span>
 			}
 		>
