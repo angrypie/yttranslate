@@ -37,8 +37,14 @@ const MenuButton = () => {
 
 function UserSettingsForm() {
 	const [userSettings, setUserSettings] = useRecoilState(userConfig)
-	const [targetLanguage, setTargetLanguage] = React.useState<string | null>(
-		userSettings.targetLanguage
+
+	const [selectTarget, targetLanguage] = useSelectLanguageCode(
+		userSettings.targetLanguage,
+		'Target Language'
+	)
+	const [selectNative, nativeLanguage] = useSelectLanguageCode(
+		userSettings.nativeLanguage,
+		'Native Language'
 	)
 
 	const clearDictionary = () => {
@@ -48,24 +54,13 @@ function UserSettingsForm() {
 	}
 
 	const changeUserSettings = () => {
-		if (targetLanguage !== null) {
-			setUserSettings(old => ({ ...old, targetLanguage }))
-		}
+		setUserSettings(old => ({ ...old, targetLanguage, nativeLanguage }))
 	}
 
 	return (
 		<>
-			<Select
-				label='Target Language'
-				placeholder='Select language'
-				value={targetLanguage}
-				onChange={setTargetLanguage}
-				data={[
-					{ value: 'pt-PT', label: 'Portuguese' },
-					{ value: 'en-US', label: 'English' },
-					{ value: 'ru-RU', label: 'Russian' },
-				]}
-			/>
+			{selectTarget}
+			{selectNative}
 			<br />
 			<Button color='green' onClick={changeUserSettings}>
 				Change User Settings
@@ -77,4 +72,23 @@ function UserSettingsForm() {
 			</Button>
 		</>
 	)
+}
+
+function useSelectLanguageCode(init: string, label: string) {
+	const [code, setCode] = React.useState<string>(init)
+
+	const selectComponent = (
+		<Select
+			label={label}
+			placeholder='Select language'
+			value={code}
+			onChange={value => setCode(value ?? init)}
+			data={[
+				{ value: 'pt-PT', label: 'Portuguese' },
+				{ value: 'en', label: 'English' },
+				{ value: 'ru-RU', label: 'Russian' },
+			]}
+		/>
+	)
+	return [selectComponent, code, setCode] as const
 }

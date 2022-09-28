@@ -1,10 +1,10 @@
 ## In Progress
-	- Setup target and native language in settings
+	- Perpare portuese/russian dictionaries
 ## Sprint
 	- load dictionaries from temporary repository on github
 		- use separate endpoint to detect if dictionary update necessary (use patches?)
-	- Perpare portuese/russian dictionaries
 	### Completed in sprint
+	+ Setup target and native language in settings
 	+ Allow to select main subtitles to use third-party translation extensios.
 	+ Adapt captions fontSize and it's container width to player content width
 	+ Fix words flickering when tooltip appear
