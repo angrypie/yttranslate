@@ -1,16 +1,17 @@
 ## In Progress
+	- Captins dosen't show up on new video
 	- Perpare portuese/russian dictionaries
 ## Sprint
 	- load dictionaries from temporary repository on github
 		- use separate endpoint to detect if dictionary update necessary (use patches?)
 	### Completed in sprint
+	+ Popup crashes on captins switch
 	+ Setup target and native language in settings
 	+ Allow to select main subtitles to use third-party translation extensios.
 	+ Adapt captions fontSize and it's container width to player content width
 	+ Fix words flickering when tooltip appear
 	+ Show native and target language captions at the same time.
 	+ subtitles container should stay in one vertical position (bottom bar now makes it jump around)
-	+ Monitor video_id, when changed - re-initialize captions observer.
 	+ Setup learning target language
 	+ Set captions to target langugage automatically (if captions exist)
 	+ Show UI immediately after page load (don't wait for dictionary load)
@@ -19,6 +20,7 @@
 	+ cache fuzzy search index
 
 ## Backlog
+	- Make captions startup faster
 	- "Report missing/wrong translation" feature for dev purposes (log varians if exist).
 	- **Interface**
 		- Create app setings

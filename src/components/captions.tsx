@@ -1,5 +1,6 @@
 import { useRecoilValue } from 'recoil'
 import {
+	captionsWrapperElement,
 	ytContentWidth,
 	ytDisplayedCaptions,
 	ytplayer,
@@ -10,13 +11,21 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Translation } from 'lib/dictionary'
 import { userConfig } from 'store/user'
-import { WrappedYtplayer } from 'lib/ytplayer'
 import { Tooltip } from 'components/popover'
 import { Space } from './text'
+import { appConfig } from 'lib/config'
 
 const captionsContainerClassName = 'yttranslation-captions-Noux1oop'
 
 const CaptionsContainer = () => {
+	const contentW = useRecoilValue(ytContentWidth)
+	const wrapper = useRecoilValue(captionsWrapperElement)
+	const fontSize = contentW < 700 ? 1.5 : 1.5 + (contentW - 700) / 1000
+	//Set font size for captions wrapper created outside of React
+	//wrapper hosts not only this component but other portals too (tooltips etc.)
+	React.useEffect(() => {
+		wrapper.style.fontSize = `${fontSize.toFixed(2)}rem`
+	}, [wrapper, fontSize])
 	return (
 		<div
 			style={{
@@ -43,9 +52,6 @@ const CaptionsDisplayArea = () => {
 	}
 
 	const width = contentW < 700 ? contentW : 0.5 * contentW + 350
-	const fontSize = contentW < 700 ? 1.5 : 1.5 + (contentW - 700) / 1000
-
-	console.log('======= update caption display area =======')
 	return (
 		<div
 			style={{
@@ -53,7 +59,6 @@ const CaptionsDisplayArea = () => {
 				flexDirection: 'column',
 				alignItems: 'center',
 				position: 'absolute',
-				fontSize: `${fontSize.toFixed(2)}rem`,
 				bottom: '10%',
 				width: `${Math.round(width)}px`,
 			}}
@@ -73,7 +78,7 @@ const CaptionLine = ({ children }: { children: React.ReactNode }) => {
 		<div
 			style={{
 				position: 'relative',
-				zIndex: '300',
+				zIndex: appConfig.ui.zIndex,
 				padding: '0.2em 0.5em',
 				background: 'rgba(0, 0, 0, 0.5)',
 				textAlign: 'center',
@@ -119,6 +124,7 @@ interface TranslatedWordProps {
 
 //TODO show only most correct translation variants
 const TranslatedWord = ({ word, translations = [] }: TranslatedWordProps) => {
+	const tooltipContainer = useRecoilValue(captionsWrapperElement)
 	const [filtered, setFiltered] = React.useState(true)
 
 	//for now show only first 4 words on hover and rest on click
@@ -143,6 +149,7 @@ const TranslatedWord = ({ word, translations = [] }: TranslatedWordProps) => {
 	const label = labels.length === 0 ? word : labels
 	return (
 		<Tooltip
+			container={tooltipContainer}
 			trigger={
 				<span onClick={onClick} style={{ cursor: 'pointer' }}>
 					{word}
@@ -178,11 +185,12 @@ export const CaptionsPortal = () => {
 		player.setCaptionsLanguage(user.targetLanguage)
 	}, [videoId])
 
-	const [captionsPortal] = useReplaceNativeCaptions(player)
+	const container = useRecoilValue(captionsWrapperElement)
+	//TODO should we unmount react portals?
+	const captionsPortal = ReactDOM.createPortal(<CaptionsContainer />, container)
+
 	return <>{captionsPortal}</>
 }
-
-type ReactPortal = ReturnType<typeof ReactDOM.createPortal>
 
 interface CaptionLine {
 	text: string
@@ -274,25 +282,6 @@ const captionsMutationCallback = (
 		}
 	}
 	return callback
-}
-
-const captionsWrapperId = 'yttranslation-captions-wrapper-Noux1oop'
-const createCaptionsWrapper = (player: WrappedYtplayer) => {
-	const exist = document.getElementById(captionsWrapperId)
-	if (exist !== null) {
-		return exist
-	}
-	const wrapper = document.createElement('div', {})
-	wrapper.setAttribute('id', captionsWrapperId)
-	player.appendChild(wrapper)
-
-	return wrapper
-}
-
-const useReplaceNativeCaptions = (player: WrappedYtplayer): ReactPortal[] => {
-	const container = createCaptionsWrapper(player)
-	//TODO should we unmount react portals?
-	return [ReactDOM.createPortal(<CaptionsContainer />, container)]
 }
 
 //places custom captions directly in place of original ones

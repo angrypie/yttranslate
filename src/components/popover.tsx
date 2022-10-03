@@ -1,6 +1,7 @@
 import { crimson } from '@radix-ui/colors'
 import * as PopoverPrimitive from '@radix-ui/react-popover'
 import { styled } from '@stitches/react'
+import { appConfig } from 'lib/config'
 import React from 'react'
 
 const StyledContent = styled(PopoverPrimitive.Content, {
@@ -20,25 +21,29 @@ export const PopoverTrigger = PopoverPrimitive.Trigger
 export const Tooltip = ({
 	trigger,
 	children,
+	container,
 }: {
 	children: React.ReactNode
 	trigger: React.ReactNode
+	container?: HTMLElement
 }) => {
 	const [open, setOpen] = React.useState(false)
-	const triggerRef = React.useRef<HTMLButtonElement>(null)
 
 	return (
 		<PopoverRoot open={open}>
 			<PopoverTrigger
-				ref={triggerRef}
 				onMouseEnter={() => setOpen(true)}
 				onMouseLeave={() => setOpen(false)}
 				asChild={true}
 			>
 				{trigger}
 			</PopoverTrigger>
-			<PopoverPrimitive.Portal container={triggerRef.current}>
-				<StyledContent side='top' sideOffset={8}>
+			<PopoverPrimitive.Portal container={container}>
+				<StyledContent
+					style={{ zIndex: appConfig.ui.zIndex }}
+					side='top'
+					sideOffset={8}
+				>
 					{children}
 					<StyledArrow />
 				</StyledContent>

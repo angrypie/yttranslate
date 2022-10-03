@@ -2,6 +2,7 @@ import {
 	getAvailableCaptionTracks,
 	getTranscript,
 	getYtplayer,
+	WrappedYtplayer,
 } from 'lib/ytplayer'
 import { atom, selector, selectorFamily } from 'recoil'
 
@@ -104,3 +105,25 @@ export const ytContentWidth = selector({
 		return get(ytplayer).getVideoContentRect().width
 	},
 })
+
+export const captionsWrapperElement = selector({
+	key: 'captionsWrapperElement',
+	get: ({ get }) => {
+		get(ytVideoId)
+		return createCaptionsWrapper(get(ytplayer))
+	},
+})
+
+const captionsWrapperId = 'yttranslation-captions-wrapper-Noux1oop'
+//Create container element for portals to render into.
+const createCaptionsWrapper = (player: WrappedYtplayer) => {
+	const exist = document.getElementById(captionsWrapperId)
+	if (exist !== null) {
+		return exist
+	}
+	const wrapper = document.createElement('div', {})
+	wrapper.setAttribute('id', captionsWrapperId)
+	player.appendChild(wrapper)
+
+	return wrapper
+}
