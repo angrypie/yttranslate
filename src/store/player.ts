@@ -2,9 +2,12 @@ import {
 	getAvailableCaptionTracks,
 	getTranscript,
 	getYtplayer,
+	PlayerState,
+	subscribeToPlayerState,
 	WrappedYtplayer,
 } from 'lib/ytplayer'
 import { atom, selector, selectorFamily } from 'recoil'
+import { match } from 'ts-pattern'
 
 export const ytplayer = selector({
 	key: 'ytplayer',
@@ -127,3 +130,22 @@ const createCaptionsWrapper = (player: WrappedYtplayer) => {
 
 	return wrapper
 }
+
+
+//Use player state subscription to detect when video paused.
+export const ytPlayerPaused = atom<boolean>({
+	key: 'ytPlayerPaused',
+	default: false,
+	effects: [
+		({ setSelf, getPromise }) => {
+			getPromise(ytplayer).then(player => {
+				subscribeToPlayerState(player, state => {
+					match(state)
+						.with(PlayerState.PLAYING, () => setSelf(false))
+						.with(PlayerState.PAUSED, () => setSelf(true))
+						.run()
+				})
+			})
+		},
+	],
+})

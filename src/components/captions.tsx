@@ -122,7 +122,6 @@ interface TranslatedWordProps {
 	translations?: Translation[]
 }
 
-//TODO show only most correct translation variants
 const TranslatedWord = ({ word, translations = [] }: TranslatedWordProps) => {
 	const tooltipContainer = useRecoilValue(captionsWrapperElement)
 	const [filtered, setFiltered] = React.useState(true)
@@ -135,7 +134,7 @@ const TranslatedWord = ({ word, translations = [] }: TranslatedWordProps) => {
 			<div
 				key={i}
 				style={{
-					fontSize: i === 0 ? '1em' : '0.8em',
+					fontSize: i === 0 ? '1.3em' : '1em',
 					color: i === 0 ? 'white' : 'lightgray',
 					fontWeight: i === 0 ? 700 : 400,
 				}}
@@ -283,7 +282,3 @@ const captionsMutationCallback = (
 	}
 	return callback
 }
-
-//places custom captions directly in place of original ones
-// const replaceCaptionLines = (captions: CaptionLine[]): ReactPortal[] =>
-// 	captions.map(caption => ReactDOM.createPortal(<CaptionsLine text={text} />, caption.origin))

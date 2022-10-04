@@ -108,3 +108,27 @@ export async function getTranscript(track: CaptionTrack): Promise<Transcript> {
 		texts,
 	}
 }
+
+//create yotube onStateChange event types as enum
+export enum PlayerState {
+	UNSTARTED = -1,
+	ENDED = 0,
+	PLAYING = 1,
+	PAUSED = 2,
+	BUFFERING = 3,
+	CUED = 5,
+}
+
+//function that subscribes to youtube player events and calls the callback
+//with current player state cocde.
+//It also returns a function that can be called to unsubscribe from the events.
+export function subscribeToPlayerState(
+	player: WrappedYtplayer,
+	callback: (state: PlayerState) => void
+) {
+	const onStateChange = (state: any) => {
+		callback(state)
+	}
+	player.addEventListener('onStateChange', onStateChange)
+	return () => player.removeEventListener('onStateChange', onStateChange)
+}
