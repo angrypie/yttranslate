@@ -26,6 +26,7 @@ const CaptionsContainer = () => {
 	React.useEffect(() => {
 		wrapper.style.fontSize = `${fontSize.toFixed(2)}rem`
 	}, [wrapper, fontSize])
+	console.log("CaptionsContainer rerender")
 	return (
 		<div
 			style={{

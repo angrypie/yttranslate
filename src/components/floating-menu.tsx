@@ -18,7 +18,6 @@ export function FloatMenu() {
 const MenuButton = () => {
 	const [opened, setOpened] = React.useState(false)
 
-	console.log('DEV_INFO ROOT RE-RENDER')
 	return (
 		<>
 			<Modal opened={opened} onClose={() => setOpened(false)} title='Settings'>

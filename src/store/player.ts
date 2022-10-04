@@ -1,5 +1,4 @@
 import {
-	getAvailableCaptionTracks,
 	getTranscript,
 	getYtplayer,
 	PlayerState,
@@ -55,7 +54,8 @@ export const ytAvailableCaptions = selector({
 	key: 'ytAvailableCaptions',
 	get: ({ get }) => {
 		get(ytVideoId) //make selector re-run everytime the video changes
-		return getAvailableCaptionTracks()
+		const player = get(ytplayer)
+		return player.getCaptionTracks()
 	},
 })
 
@@ -130,7 +130,6 @@ const createCaptionsWrapper = (player: WrappedYtplayer) => {
 
 	return wrapper
 }
-
 
 //Use player state subscription to detect when video paused.
 export const ytPlayerPaused = atom<boolean>({

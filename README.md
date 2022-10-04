@@ -1,10 +1,10 @@
 ## In Progress
-	- Captins dosen't show up on new video
-	- Perpare portuese/russian dictionaries
+	- Perpare portuguese/russian dictionaries
 ## Sprint
 	- load dictionaries from temporary repository on github
 		- use separate endpoint to detect if dictionary update necessary (use patches?)
 	### Completed in sprint
+	+ Captions dosen't show up on new video
 	+ Popup crashes on captins switch
 	+ Setup target and native language in settings
 	+ Allow to select main subtitles to use third-party translation extensios.
@@ -20,7 +20,9 @@
 	+ cache fuzzy search index
 
 ## Backlog
-	- Make captions startup faster
+	-  Looking for `ficamos` we got `we look` wich is not correct, and `ficámos` was ignored.
+		- Entries in dict: `ficamos	we look	1` and `ficámos	we were	2	we stayed	1`
+		- Should it be done on preparation level or client-side with fuzzy search?
 	- "Report missing/wrong translation" feature for dev purposes (log varians if exist).
 	- **Interface**
 		- Create app setings
@@ -38,6 +40,7 @@
 			- incorrect langugae pair
 			- correct language but incorrect translation variant (use score?)
 	- **Perfomance**
+		- Make whole app startup faster. (fuzzy search indexing/restoring takes most time).
 		- words usage frequency, could we use score from library as loose indication of frequency?
 			- preload most used words first and then rest of the dictionary
 	- **Dev environment**

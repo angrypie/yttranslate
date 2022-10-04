@@ -15,6 +15,20 @@ export interface ExposedYtplayer extends HTMLDivElement {
 	}
 	getOption(module: string, option: string): any
 	setOption(module: string, option: string, value: any): void
+	getPlayerResponse(): YtPlayerResponse
+}
+
+interface YtPlayerResponse {
+	captions: {
+		playerCaptionsTracklistRenderer: {
+			captionTracks: CaptionTrack[]
+		}
+	}
+}
+
+export type CaptionTrack = {
+	languageCode: string
+	baseUrl: string
 }
 
 //runtime check for object to be of type ExposedYtplayer
@@ -30,6 +44,7 @@ export function isExposedYtplayer(obj: any): obj is ExposedYtplayer {
 export interface WrappedYtplayer extends ExposedYtplayer {
 	getCaptionsContainer(): HTMLElement | null
 	setCaptionsLanguage(language: string): void
+	getCaptionTracks(): CaptionTrack[]
 }
 
 //getYttlayer try to find movie_player eleement in the page.
@@ -62,6 +77,12 @@ const wrapYtplayer = (player: ExposedYtplayer): WrappedYtplayer =>
 		setCaptionsLanguage(language: string) {
 			player.setOption('captions', 'track', { languageCode: language })
 		},
+
+		//get available captions tracks list with url to load from server
+		getCaptionTracks(): CaptionTrack[] {
+			return player.getPlayerResponse().captions.playerCaptionsTracklistRenderer
+				.captionTracks
+		},
 	})
 
 export interface TranscriptEntry {
@@ -75,24 +96,8 @@ export interface Transcript {
 	texts: TranscriptEntry[]
 }
 
-export type CaptionTrack = {
-	languageCode: string
-	baseUrl: string
-}
-
-export function getAvailableCaptionTracks(): CaptionTrack[] {
-	//@ts-ignore
-	if (window?.ytplayer === undefined) {
-		return []
-	}
-	//@ts-ignore
-	return window.ytplayer.config.args.raw_player_response.captions
-		.playerCaptionsTracklistRenderer.captionTracks
-}
-
 export async function getTranscript(track: CaptionTrack): Promise<Transcript> {
 	const { baseUrl, languageCode } = track
-	console.log('loading transcript')
 	const url = `${baseUrl}&fmt=json3`
 	const resp = await fetch(url)
 	const data = await resp.json()
