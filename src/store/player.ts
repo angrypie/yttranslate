@@ -1,3 +1,4 @@
+import { bestLangCodeMatch } from 'lib/languageCodes'
 import {
 	getTranscript,
 	getYtplayer,
@@ -67,7 +68,7 @@ export const ytVideoCaptions = selectorFamily({
 		async ({ get }) => {
 			get(ytVideoId) //make selector re-run everytime the video changes
 			const available = get(ytAvailableCaptions)
-			const track = available.find(track => track.languageCode === languageCode)
+			const track = bestLangCodeMatch(languageCode, available)
 			if (track === undefined) {
 				return undefined
 			}
@@ -90,13 +91,16 @@ export const ytDisplayedCaptions = selectorFamily({
 
 			//TODO find faster way to search for next caption line
 			//maybe arrayt with time (100 ms step) as index?
-			const entry = transcript.texts.find(
-				({ time, duration }) => current > time && time + duration > current
-			)
-			if (entry === undefined) {
+			const entries = transcript.texts
+				.filter(
+					({ time, duration }) => current > time && time + duration > current
+				)
+				.map(({ text }) => text)
+			if (entries.length === 0) {
 				return ''
 			}
-			return entry.text
+			const entry = entries[entries.length - 1]
+			return entry
 		},
 })
 

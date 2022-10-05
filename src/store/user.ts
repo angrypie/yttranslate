@@ -9,7 +9,7 @@ interface UserConfig {
 export const userConfig = atom<UserConfig>({
 	key: 'userConfig',
 	default: {
-		targetLanguage: 'pt-PT',
+		targetLanguage: 'pt',
 		nativeLanguage: 'en',
 	},
 })

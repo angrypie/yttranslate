@@ -22,6 +22,7 @@ interface YtPlayerResponse {
 	captions: {
 		playerCaptionsTracklistRenderer: {
 			captionTracks: CaptionTrack[]
+			king: string
 		}
 	}
 }
@@ -29,6 +30,10 @@ interface YtPlayerResponse {
 export type CaptionTrack = {
 	languageCode: string
 	baseUrl: string
+	kind?: 'asr' | 'forced' | 'standard'
+	name: { simpleText: string }
+	isTranslatable: boolean
+	vssId: string
 }
 
 //runtime check for object to be of type ExposedYtplayer
@@ -79,9 +84,12 @@ const wrapYtplayer = (player: ExposedYtplayer): WrappedYtplayer =>
 		},
 
 		//get available captions tracks list with url to load from server
+		//sort tracks by type, auto-generated to be at the end
 		getCaptionTracks(): CaptionTrack[] {
-			return player.getPlayerResponse().captions.playerCaptionsTracklistRenderer
-				.captionTracks
+			return player
+				.getPlayerResponse()
+				.captions.playerCaptionsTracklistRenderer.captionTracks.slice()
+				.sort((_, el) => (el.kind === 'asr' ? -1 : 0))
 		},
 	})
 
@@ -96,17 +104,31 @@ export interface Transcript {
 	texts: TranscriptEntry[]
 }
 
+type TranscriptData = {
+	events: {
+		tStartMs: number
+		dDurationMs: number
+		segs?: { utf8: string }[]
+	}[]
+}
+
 export async function getTranscript(track: CaptionTrack): Promise<Transcript> {
 	const { baseUrl, languageCode } = track
 	const url = `${baseUrl}&fmt=json3`
 	const resp = await fetch(url)
-	const data = await resp.json()
+	const data: TranscriptData = await resp.json()
 
-	const texts = data.events.map((event: any) => ({
-		time: event.tStartMs,
-		duration: event.dDurationMs,
-		text: event.segs[0].utf8, //TODO handle multiple segments
-	}))
+	const texts = data.events
+		//filter evets that does not have segments with text
+		.filter(
+			(event): event is Required<TranscriptData['events'][0]> =>
+				event.segs !== undefined
+		)
+		.map(event => ({
+			time: event.tStartMs,
+			duration: event.dDurationMs,
+			text: event.segs.map((seg: any) => seg.utf8).join(' '),
+		}))
 
 	return {
 		languageCode,

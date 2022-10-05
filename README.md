@@ -1,4 +1,5 @@
 ## In Progress
+	- Find better way to search current displayed captions (generated and manual)
 	- Perpare portuguese/russian dictionaries
 ## Sprint
 	- load dictionaries from temporary repository on github

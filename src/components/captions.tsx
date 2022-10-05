@@ -26,7 +26,7 @@ const CaptionsContainer = () => {
 	React.useEffect(() => {
 		wrapper.style.fontSize = `${fontSize.toFixed(2)}rem`
 	}, [wrapper, fontSize])
-	console.log("CaptionsContainer rerender")
+	console.log('CaptionsContainer rerender')
 	return (
 		<div
 			style={{
@@ -90,23 +90,24 @@ const CaptionLine = ({ children }: { children: React.ReactNode }) => {
 	)
 }
 
+//TODO rewrite in rust WASM
+//parseCaptionText parses caption text and returns array of words
+const parseCaptionEntry = (entry: string): string[] =>
+	entry.split('\n').join(' ').split(' ')
+
 const TranslatedCaption = ({ text }: { text: string }) => {
 	const dictionary = useRecoilValue(bidirectionalDictionary)
 	// split string by new-lines and spaces and map word to translated
-	const words = text
-		.split('\n')
-		.join(' ')
-		.split(' ')
-		.map((word, i) => (
-			<>
-				<TranslatedWord
-					key={i}
-					word={word}
-					translations={dictionary.get(trimDictionaryWord(word).toLowerCase())}
-				/>
-				<Space />
-			</>
-		))
+	const words = parseCaptionEntry(text).map((word, i) => (
+		<>
+			<TranslatedWord
+				key={i}
+				word={word}
+				translations={dictionary.get(trimDictionaryWord(word).toLowerCase())}
+			/>
+			<Space />
+		</>
+	))
 
 	return (
 		<span
