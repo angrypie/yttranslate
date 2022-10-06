@@ -43,6 +43,7 @@ const CaptionsContainer = () => {
 	)
 }
 
+//TODO display multiple caption lines (currently only one is displayed)
 const CaptionsDisplayArea = () => {
 	const user = useRecoilValue(userConfig)
 	const targetLines = useRecoilValue(ytDisplayedCaptions(user.targetLanguage))
@@ -52,7 +53,7 @@ const CaptionsDisplayArea = () => {
 		return null
 	}
 
-	console.log("update display area")
+	console.log('update display area')
 	const width = contentW < 700 ? contentW : 0.5 * contentW + 350
 	return (
 		<div
@@ -66,10 +67,14 @@ const CaptionsDisplayArea = () => {
 			}}
 		>
 			<CaptionLine>
-				<TranslatedCaption text={targetLines[0]?.text ?? ''} />
+				<TranslatedCaption
+					text={targetLines[targetLines.length - 1]?.text ?? ''}
+				/>
 			</CaptionLine>
 			<div style={{ marginTop: '0.5em' }}>
-				<CaptionLine>{nativeLines[0]?.text ?? ''}</CaptionLine>
+				<CaptionLine>
+					{nativeLines[nativeLines.length - 1]?.text ?? ''}
+				</CaptionLine>
 			</div>
 		</div>
 	)

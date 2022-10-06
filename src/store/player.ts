@@ -16,7 +16,7 @@ export const ytplayer = selector({
 	},
 })
 
-export const updateLoopIntervalMs = 20
+export const updateLoopIntervalMs = 50
 
 const frequentUpdateLoop = atom<number>({
 	key: 'freequentUpdateLoop',
@@ -75,24 +75,24 @@ export const ytVideoCaptions = selectorFamily({
 				return undefined
 			}
 			const transcript = await getTranscript(track)
-			const prepared: number[][] = []
+			const steps: string[] = []
 
 			for (const i of transcript.texts.keys()) {
 				const { time, duration } = transcript.texts[i]
+				//We must add 1 step to mae sure
 				let step = Math.floor(time / updateLoopIntervalMs) + 1
 				let current = step * updateLoopIntervalMs
 
 				while (current >= time && time + duration > current) {
-					prepared[step] === undefined
-						? (prepared[step] = [i])
-						: prepared[step].push(i)
+					const entries = steps[step]
+					steps[step] = entries === undefined ? i.toString() : `${entries} ${i}`
 					step += 1
 					current = step * updateLoopIntervalMs
 				}
 			}
 
-			console.log("size of prepared: ", prepared.length)
-			return { prepared, transcript: transcript.texts }
+			console.log('size of prepared captions steps: ', steps.length)
+			return { steps, transcript: transcript.texts }
 		},
 })
 
@@ -102,6 +102,8 @@ export const ytDisplayedCaptions = selectorFamily({
 		(languageCode: string) =>
 		({ get }) => {
 			const captions = get(ytVideoCaptions(languageCode))
+			//TODO maybe create helper to reproduce this pattern.
+			//Selector helpers returns hash instead of the actual value to signal value should change.
 			const displayed = get(ytNextDisplayedCaptions(languageCode))
 			if (displayed === '' || captions === undefined) {
 				return []
@@ -113,6 +115,7 @@ export const ytDisplayedCaptions = selectorFamily({
 			return entries
 		},
 })
+
 
 //ytCurrentCaptions is the captions that should be displayed
 //based on current view progress
@@ -128,9 +131,9 @@ export const ytNextDisplayedCaptions = selectorFamily({
 			}
 
 			const step = Math.floor(current / updateLoopIntervalMs)
-			const entries = captions.prepared[step] ?? []
+			const entries = captions.steps[step] ?? ''
 
-			return entries.join(' ')
+			return entries
 		},
 })
 

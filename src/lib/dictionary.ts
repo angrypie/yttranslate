@@ -105,7 +105,7 @@ async function FuzzyDictionary(pairs: [string, Translation[]][]) {
 				results.hits.map(hit => hit.word)
 			)
 			console.log('not found', word, 'but closest is', closest)
-			return map.get(closest) || []
+			return map.get(closest) ?? []
 		},
 	}
 }
