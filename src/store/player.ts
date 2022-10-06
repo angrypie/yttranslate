@@ -16,6 +16,8 @@ export const ytplayer = selector({
 	},
 })
 
+export const updateLoopIntervalMs = 20
+
 const frequentUpdateLoop = atom<number>({
 	key: 'freequentUpdateLoop',
 	default: 0,
@@ -23,7 +25,7 @@ const frequentUpdateLoop = atom<number>({
 		({ setSelf }) => {
 			const interval = setInterval(() => {
 				setSelf(new Date().getTime())
-			}, 100)
+			}, updateLoopIntervalMs)
 			return () => clearInterval(interval)
 		},
 	],
@@ -72,35 +74,63 @@ export const ytVideoCaptions = selectorFamily({
 			if (track === undefined) {
 				return undefined
 			}
-			return getTranscript(track)
+			const transcript = await getTranscript(track)
+			const prepared: number[][] = []
+
+			for (const i of transcript.texts.keys()) {
+				const { time, duration } = transcript.texts[i]
+				let step = Math.floor(time / updateLoopIntervalMs) + 1
+				let current = step * updateLoopIntervalMs
+
+				while (current >= time && time + duration > current) {
+					prepared[step] === undefined
+						? (prepared[step] = [i])
+						: prepared[step].push(i)
+					step += 1
+					current = step * updateLoopIntervalMs
+				}
+			}
+
+			console.log("size of prepared: ", prepared.length)
+			return { prepared, transcript: transcript.texts }
 		},
 })
 
-//ytCurrentCaptions is the captions that should be displayed
-//based on current view progress
 export const ytDisplayedCaptions = selectorFamily({
 	key: 'ytCurrentCaptions',
 	get:
 		(languageCode: string) =>
 		({ get }) => {
+			const captions = get(ytVideoCaptions(languageCode))
+			const displayed = get(ytNextDisplayedCaptions(languageCode))
+			if (displayed === '' || captions === undefined) {
+				return []
+			}
+			const entries = displayed
+				.split(' ')
+				.map((x: string) => captions.transcript[parseInt(x)])
+
+			return entries
+		},
+})
+
+//ytCurrentCaptions is the captions that should be displayed
+//based on current view progress
+export const ytNextDisplayedCaptions = selectorFamily({
+	key: 'ytNextDisplayedCaptions',
+	get:
+		(languageCode: string) =>
+		({ get }) => {
 			const current = get(ytplayerTime)
-			const transcript = get(ytVideoCaptions(languageCode))
-			if (transcript === undefined) {
+			const captions = get(ytVideoCaptions(languageCode))
+			if (captions === undefined) {
 				return ''
 			}
 
-			//TODO find faster way to search for next caption line
-			//maybe arrayt with time (100 ms step) as index?
-			const entries = transcript.texts
-				.filter(
-					({ time, duration }) => current > time && time + duration > current
-				)
-				.map(({ text }) => text)
-			if (entries.length === 0) {
-				return ''
-			}
-			const entry = entries[entries.length - 1]
-			return entry
+			const step = Math.floor(current / updateLoopIntervalMs)
+			const entries = captions.prepared[step] ?? []
+
+			return entries.join(' ')
 		},
 })
 

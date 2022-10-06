@@ -45,13 +45,14 @@ const CaptionsContainer = () => {
 
 const CaptionsDisplayArea = () => {
 	const user = useRecoilValue(userConfig)
-	const targetLine = useRecoilValue(ytDisplayedCaptions(user.targetLanguage))
-	const nativeLine = useRecoilValue(ytDisplayedCaptions(user.nativeLanguage))
+	const targetLines = useRecoilValue(ytDisplayedCaptions(user.targetLanguage))
+	const nativeLines = useRecoilValue(ytDisplayedCaptions(user.nativeLanguage))
 	const contentW = useRecoilValue(ytContentWidth)
-	if (targetLine === '' && nativeLine === '') {
+	if (targetLines.length === 0 && nativeLines.length === 0) {
 		return null
 	}
 
+	console.log("update display area")
 	const width = contentW < 700 ? contentW : 0.5 * contentW + 350
 	return (
 		<div
@@ -65,10 +66,10 @@ const CaptionsDisplayArea = () => {
 			}}
 		>
 			<CaptionLine>
-				<TranslatedCaption text={targetLine} />
+				<TranslatedCaption text={targetLines[0]?.text ?? ''} />
 			</CaptionLine>
 			<div style={{ marginTop: '0.5em' }}>
-				<CaptionLine>{nativeLine}</CaptionLine>
+				<CaptionLine>{nativeLines[0]?.text ?? ''}</CaptionLine>
 			</div>
 		</div>
 	)
