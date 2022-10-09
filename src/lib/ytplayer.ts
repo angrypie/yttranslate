@@ -101,7 +101,7 @@ export interface TranscriptEntry {
 
 export interface Transcript {
 	languageCode: string
-	texts: TranscriptEntry[]
+	entries: TranscriptEntry[]
 }
 
 type TranscriptData = {
@@ -112,27 +112,50 @@ type TranscriptData = {
 	}[]
 }
 
+//fetch and prepare transcript data from server
 export async function getTranscript(track: CaptionTrack): Promise<Transcript> {
 	const { baseUrl, languageCode } = track
 	const url = `${baseUrl}&fmt=json3`
 	const resp = await fetch(url)
 	const data: TranscriptData = await resp.json()
 
-	const texts = data.events
-		//filter evets that does not have segments with text
-		.filter(
-			(event): event is Required<TranscriptData['events'][0]> =>
-				event.segs !== undefined
-		)
-		.map(event => ({
+	const entries: TranscriptEntry[] = []
+	for (let event of data.events.sort((a, b) => a.tStartMs - b.tStartMs)) {
+		const currentIndex = entries.length
+		if (event.segs === undefined) {
+			continue
+		}
+		const text = event.segs.map((seg: any) => seg.utf8).join(' ')
+		if (text.trim() === '') {
+			continue
+		}
+		if (currentIndex !== 0) {
+			const prev = entries[currentIndex - 1]
+			//Merge entries fi combined text length no more than 100 chars
+			//and time difference between entries is less than 5 seconds
+			if (
+				prev.text.length + text.length < 100 &&
+				event.tStartMs - (prev.time + prev.duration) < 5000
+			) {
+				prev.text += ' ' + text
+				prev.duration = event.tStartMs - prev.time + event.dDurationMs
+				continue
+			}
+			//If we age going to push new entry.
+			//Stop previous entry as soon as new one starts
+			prev.duration = event.tStartMs - prev.time
+		}
+		///-----s1-----s2-----d1-----d2-------->
+		entries.push({
 			time: event.tStartMs,
 			duration: event.dDurationMs,
-			text: event.segs.map((seg: any) => seg.utf8).join(' '),
-		}))
+			text,
+		})
+	}
 
 	return {
 		languageCode,
-		texts,
+		entries,
 	}
 }
 

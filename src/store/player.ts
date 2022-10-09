@@ -74,30 +74,30 @@ export const ytVideoCaptions = selectorFamily({
 			if (track === undefined) {
 				return undefined
 			}
-			const transcript = await getTranscript(track)
+			const transcripts = (await getTranscript(track)).entries
+
+			//TODO what takes more space in memory, number or repeated strings?
 			const steps: string[] = []
 
-			for (const i of transcript.texts.keys()) {
-				const { time, duration } = transcript.texts[i]
+			for (const i of transcripts.keys()) {
+				const { time, duration } = transcripts[i]
 				//We must add 1 step to mae sure
 				let step = Math.floor(time / updateLoopIntervalMs) + 1
 				let current = step * updateLoopIntervalMs
-
 				while (current >= time && time + duration > current) {
-					const entries = steps[step]
-					steps[step] = entries === undefined ? i.toString() : `${entries} ${i}`
+					steps[step] = i.toString()
 					step += 1
 					current = step * updateLoopIntervalMs
 				}
 			}
 
 			console.log('size of prepared captions steps: ', steps.length)
-			return { steps, transcript: transcript.texts }
+			return { steps, transcripts }
 		},
 })
 
 export const ytDisplayedCaptions = selectorFamily({
-	key: 'ytCurrentCaptions',
+	key: 'ytDisplayedCaptions',
 	get:
 		(languageCode: string) =>
 		({ get }) => {
@@ -106,16 +106,11 @@ export const ytDisplayedCaptions = selectorFamily({
 			//Selector helpers returns hash instead of the actual value to signal value should change.
 			const displayed = get(ytNextDisplayedCaptions(languageCode))
 			if (displayed === '' || captions === undefined) {
-				return []
+				return ''
 			}
-			const entries = displayed
-				.split(' ')
-				.map((x: string) => captions.transcript[parseInt(x)])
-
-			return entries
+			return captions.transcripts[parseInt(displayed)].text
 		},
 })
-
 
 //ytCurrentCaptions is the captions that should be displayed
 //based on current view progress

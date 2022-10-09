@@ -15,6 +15,29 @@ import { Tooltip } from 'components/popover'
 import { Space } from './text'
 import { appConfig } from 'lib/config'
 
+export const Captions = () => (
+	//Captions portal must be wrrapped in Suspense
+	<React.Suspense fallback={null}>
+		<CaptionsPortal />
+	</React.Suspense>
+)
+
+export const CaptionsPortal = () => {
+	const player = useRecoilValue(ytplayer)
+	const videoId = useRecoilValue(ytVideoId)
+	const user = useRecoilValue(userConfig)
+
+	React.useEffect(() => {
+		player.setCaptionsLanguage(user.targetLanguage)
+	}, [videoId])
+
+	const container = useRecoilValue(captionsWrapperElement)
+	//TODO should we unmount react portals?
+	const captionsPortal = ReactDOM.createPortal(<CaptionsContainer />, container)
+
+	return <>{captionsPortal}</>
+}
+
 const captionsContainerClassName = 'yttranslation-captions-Noux1oop'
 
 const CaptionsContainer = () => {
@@ -46,10 +69,11 @@ const CaptionsContainer = () => {
 //TODO display multiple caption lines (currently only one is displayed)
 const CaptionsDisplayArea = () => {
 	const user = useRecoilValue(userConfig)
-	const targetLines = useRecoilValue(ytDisplayedCaptions(user.targetLanguage))
-	const nativeLines = useRecoilValue(ytDisplayedCaptions(user.nativeLanguage))
+	const targetLine = useRecoilValue(ytDisplayedCaptions(user.targetLanguage))
+	const nativeLine = useRecoilValue(ytDisplayedCaptions(user.nativeLanguage))
 	const contentW = useRecoilValue(ytContentWidth)
-	if (targetLines.length === 0 && nativeLines.length === 0) {
+
+	if (targetLine === '' && nativeLine === '') {
 		return null
 	}
 
@@ -67,14 +91,10 @@ const CaptionsDisplayArea = () => {
 			}}
 		>
 			<CaptionLine>
-				<TranslatedCaption
-					text={targetLines[targetLines.length - 1]?.text ?? ''}
-				/>
+				<TranslatedCaption text={targetLine} />
 			</CaptionLine>
 			<div style={{ marginTop: '0.5em' }}>
-				<CaptionLine>
-					{nativeLines[nativeLines.length - 1]?.text ?? ''}
-				</CaptionLine>
+				<CaptionLine>{nativeLine}</CaptionLine>
 			</div>
 		</div>
 	)
@@ -174,29 +194,6 @@ const TranslatedWord = ({ word, translations = [] }: TranslatedWordProps) => {
 			</div>
 		</Tooltip>
 	)
-}
-
-export const Captions = () => (
-	//Captions portal must be wrrapped in Suspense
-	<React.Suspense fallback={null}>
-		<CaptionsPortal />
-	</React.Suspense>
-)
-
-export const CaptionsPortal = () => {
-	const player = useRecoilValue(ytplayer)
-	const videoId = useRecoilValue(ytVideoId)
-	const user = useRecoilValue(userConfig)
-
-	React.useEffect(() => {
-		player.setCaptionsLanguage(user.targetLanguage)
-	}, [videoId])
-
-	const container = useRecoilValue(captionsWrapperElement)
-	//TODO should we unmount react portals?
-	const captionsPortal = ReactDOM.createPortal(<CaptionsContainer />, container)
-
-	return <>{captionsPortal}</>
 }
 
 interface CaptionLine {

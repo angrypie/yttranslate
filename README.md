@@ -1,10 +1,11 @@
 ## In Progress
-	- Find better way to search current displayed captions (generated and manual)
-	- Perpare portuguese/russian dictionaries
+	- Show translated captions alongside with auto-generated
+	- Prepare portuguese/russian dictionaries
 ## Sprint
 	- load dictionaries from temporary repository on github
 		- use separate endpoint to detect if dictionary update necessary (use patches?)
 	### Completed in sprint
+	+ Find better way to search current displayed captions (generated and manual)
 	+ Captions dosen't show up on new video
 	+ Popup crashes on captins switch
 	+ Setup target and native language in settings
