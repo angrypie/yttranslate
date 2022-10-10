@@ -86,10 +86,13 @@ const wrapYtplayer = (player: ExposedYtplayer): WrappedYtplayer =>
 		//get available captions tracks list with url to load from server
 		//sort tracks by type, auto-generated to be at the end
 		getCaptionTracks(): CaptionTrack[] {
-			return player
-				.getPlayerResponse()
-				.captions.playerCaptionsTracklistRenderer.captionTracks.slice()
-				.sort((_, el) => (el.kind === 'asr' ? -1 : 0))
+			const resp = player.getPlayerResponse()
+			if (resp === undefined) {
+				//TODO remove
+				alert('player.getPlayerResponse() returned undefined')
+				return []
+			}
+			return resp.captions.playerCaptionsTracklistRenderer.captionTracks.slice()
 		},
 	})
 
@@ -129,10 +132,11 @@ export async function getTranscript(track: CaptionTrack): Promise<Transcript> {
 		if (text.trim() === '') {
 			continue
 		}
-		if (currentIndex !== 0) {
+		//Normalization for auto-generated captions
+		if (track.kind === 'asr' && currentIndex !== 0) {
 			const prev = entries[currentIndex - 1]
-			//Merge entries fi combined text length no more than 100 chars
-			//and time difference between entries is less than 5 seconds
+			//Merge entries if combined text length no more than 100 chars
+			//and time difference between entries is less than 5 seconds.
 			if (
 				prev.text.length + text.length < 100 &&
 				event.tStartMs - (prev.time + prev.duration) < 5000
@@ -145,7 +149,7 @@ export async function getTranscript(track: CaptionTrack): Promise<Transcript> {
 			//Stop previous entry as soon as new one starts
 			prev.duration = event.tStartMs - prev.time
 		}
-		///-----s1-----s2-----d1-----d2-------->
+
 		entries.push({
 			time: event.tStartMs,
 			duration: event.dDurationMs,
