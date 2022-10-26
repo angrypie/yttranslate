@@ -1,10 +1,12 @@
 ## In Progress
-	- Show translated captions alongside with auto-generated
 	- Prepare portuguese/russian dictionaries
 ## Sprint
+	- google translate on selection?
+	- remove &nbsp; from captions line
 	- load dictionaries from temporary repository on github
 		- use separate endpoint to detect if dictionary update necessary (use patches?)
 	### Completed in sprint
+	+ Show translated captions alongside with auto-generated
 	+ Find better way to search current displayed captions (generated and manual)
 	+ Captions dosen't show up on new video
 	+ Popup crashes on captins switch

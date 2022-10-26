@@ -8,6 +8,7 @@ import {
 } from 'lib/ytplayer'
 import { atom, selector, selectorFamily } from 'recoil'
 import { match } from 'ts-pattern'
+import { userConfig } from './user'
 
 export const ytplayer = selector({
 	key: 'ytplayer',
@@ -70,10 +71,18 @@ export const ytVideoCaptions = selectorFamily({
 		async ({ get }) => {
 			get(ytVideoId) //make selector re-run everytime the video changes
 			const available = get(ytAvailableCaptions)
-			const track = bestLangCodeMatch(languageCode, available)
+			const user = get(userConfig)
+
+			//If track is not available try to use target language auto-translation
+			const track =
+				bestLangCodeMatch(languageCode, available) ??
+				(t => (t === undefined ? t : { ...t, translateTo: languageCode }))(
+					bestLangCodeMatch(user.targetLanguage, available)
+				)
 			if (track === undefined) {
 				return undefined
 			}
+
 			const transcripts = (await getTranscript(track)).entries
 
 			//TODO what takes more space in memory, number or repeated strings?

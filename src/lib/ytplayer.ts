@@ -28,6 +28,7 @@ interface YtPlayerResponse {
 }
 
 export type CaptionTrack = {
+	translateTo?: string
 	languageCode: string
 	baseUrl: string
 	kind?: 'asr' | 'forced' | 'standard'
@@ -117,8 +118,10 @@ type TranscriptData = {
 
 //fetch and prepare transcript data from server
 export async function getTranscript(track: CaptionTrack): Promise<Transcript> {
-	const { baseUrl, languageCode } = track
-	const url = `${baseUrl}&fmt=json3`
+	const { baseUrl, languageCode, translateTo } = track
+	const url = `${baseUrl}&fmt=json3${
+		translateTo === undefined ? '' : `&tlang=${translateTo}`
+	}`
 	const resp = await fetch(url)
 	const data: TranscriptData = await resp.json()
 
