@@ -3,6 +3,7 @@ import { IconLanguage } from '@tabler/icons'
 import { useRecoilState } from 'recoil'
 import React from 'react'
 import { userConfig } from 'store/user'
+import { clearDictionary } from 'lib/dictionary'
 
 export function FloatMenu() {
 	return (
@@ -46,8 +47,8 @@ function UserSettingsForm() {
 		'Native Language'
 	)
 
-	const clearDictionary = () => {
-		if (confirm('are you sure you want to exit?')) {
+	const clearHandler = () => {
+		if (confirm('are you sure you want to clear dictionary?')) {
 			clearDictionary()
 		}
 	}
@@ -66,7 +67,7 @@ function UserSettingsForm() {
 			</Button>
 			<br />
 			<br />
-			<Button color='red' onClick={clearDictionary}>
+			<Button color='red' onClick={clearHandler}>
 				Clear Dictionary
 			</Button>
 		</>
