@@ -22,8 +22,16 @@ export interface Dictionary {
 	get(word: string): Translation[]
 }
 
+//getDictUrl retursns URL to dictionary based on language pair and client version
+//TODO: user /dicts.json endpoint to figure-out if latest update available
+//TODO: comporess dictionary on cloudflare
+const getDictUrl = (code: string, version: string) =>
+	`https://api-dicts.immerse.school/${code}@${version}.txt`
+
 export async function fetchDictionary(): Promise<Dictionary> {
-	const serialMap = await get('pt-en')
+	const code = 'pt-en'
+	const version = '0.1'
+	const serialMap = await get(code)
 
 	const pairs = await match(serialMap)
 		.with(P.string, serialized => {
@@ -32,7 +40,7 @@ export async function fetchDictionary(): Promise<Dictionary> {
 		})
 		.otherwise(async () => {
 			console.log('Fetching dictionary')
-			const dictUrl = 'http://localhost:9111/pt-en.dic.gz'
+			const dictUrl = getDictUrl(code, version)
 			try {
 				const resp = await fetch(dictUrl, { mode: 'cors' })
 				let text = await resp.text()
@@ -40,7 +48,7 @@ export async function fetchDictionary(): Promise<Dictionary> {
 				const pairs = parseDictionary(text)
 
 				const serializedDict = JSON.stringify(pairs)
-				await set('pt-en', serializedDict)
+				await set(code, serializedDict)
 				return pairs
 			} catch (err) {
 				alert(err)
