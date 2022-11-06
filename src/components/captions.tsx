@@ -116,15 +116,14 @@ const CaptionLine = ({ children }: { children: React.ReactNode }) => {
 	)
 }
 
-//TODO rewrite in rust WASM
+//TODO rewrite respecting all possible delimeters (-, ;, etc.)
 //parseCaptionText parses caption text and returns array of words
-const parseCaptionEntry = (entry: string): string[] =>
-	entry.split('\n').join(' ').split(' ')
+const captionEntryToWords = (entry: string): string[] => entry.split(/\s+/g)
 
 const TranslatedCaption = ({ text }: { text: string }) => {
 	const dictionary = useRecoilValue(bidirectionalDictionary)
 	// split string by new-lines and spaces and map word to translated
-	const words = parseCaptionEntry(text).map((word, i) => (
+	const words = captionEntryToWords(text).map((word, i) => (
 		<>
 			<TranslatedWord
 				key={i}

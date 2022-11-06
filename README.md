@@ -1,11 +1,12 @@
 ## In Progress
-	- Prepare portuguese/russian dictionaries
-## Sprint
-	- google translate on selection?
-	- remove &nbsp; from captions line
-	- load dictionaries from temporary repository on github
-		- use separate endpoint to detect if dictionary update necessary (use patches?)
-	### Completed in sprint
+	- do not crash app when video container is not available
+## Sprint - Prepare portuguese/russian dictionaries ### Completed in sprint
+	- Youtube controls should be on tope of the captions container
+	- remove lag when fuzzy search are initializing 
+	- use separate endpoint to detect if dictionary update necessary (use patches?)
+
+	+ Remove &bspn; character https://youtu.be/NShZsgd7rV4?t=854
+	+ load dictionaries from subdomain API
 	+ Show translated captions alongside with auto-generated
 	+ Find better way to search current displayed captions (generated and manual)
 	+ Captions dosen't show up on new video
@@ -24,6 +25,7 @@
 	+ cache fuzzy search index
 
 ## Backlog
+	- google translate on selection?
 	-  Looking for `ficamos` we got `we look` wich is not correct, and `ficámos` was ignored.
 		- Entries in dict: `ficamos	we look	1` and `ficámos	we were	2	we stayed	1`
 		- Should it be done on preparation level or client-side with fuzzy search?
