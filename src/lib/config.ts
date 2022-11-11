@@ -1,5 +1,5 @@
 export const appConfig = {
 	ui: {
-		zIndex: '300',
+		zIndex: '50',
 	},
 }

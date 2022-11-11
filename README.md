@@ -1,7 +1,6 @@
 ## In Progress
-	- do not crash app when video container is not available
+	- Improve selection of translated words.
 ## Sprint - Prepare portuguese/russian dictionaries ### Completed in sprint
-	- Youtube controls should be on tope of the captions container
 	- remove lag when fuzzy search are initializing 
 	- use separate endpoint to detect if dictionary update necessary (use patches?)
 
