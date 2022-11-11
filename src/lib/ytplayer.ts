@@ -15,7 +15,7 @@ export interface ExposedYtplayer extends HTMLDivElement {
 	}
 	getOption(module: string, option: string): any
 	setOption(module: string, option: string, value: any): void
-	getPlayerResponse(): YtPlayerResponse
+	getPlayerResponse(): YtPlayerResponse | null
 }
 
 interface YtPlayerResponse {
@@ -88,9 +88,7 @@ const wrapYtplayer = (player: ExposedYtplayer): WrappedYtplayer =>
 		//sort tracks by type, auto-generated to be at the end
 		getCaptionTracks(): CaptionTrack[] {
 			const resp = player.getPlayerResponse()
-			if (resp === undefined) {
-				//TODO remove
-				alert('player.getPlayerResponse() returned undefined')
+			if (resp === null || resp.captions === undefined) {
 				return []
 			}
 			return resp.captions.playerCaptionsTracklistRenderer.captionTracks.slice()

@@ -178,14 +178,15 @@ export const ytPlayerPaused = atom<boolean>({
 	default: false,
 	effects: [
 		({ setSelf, getPromise }) => {
-			getPromise(ytplayer).then(player => {
+			const unsubscribe = getPromise(ytplayer).then(player =>
 				subscribeToPlayerState(player, state => {
 					match(state)
 						.with(PlayerState.PLAYING, () => setSelf(false))
 						.with(PlayerState.PAUSED, () => setSelf(true))
 						.run()
 				})
-			})
+			)
+			return () => unsubscribe.then(c => c())
 		},
 	],
 })
