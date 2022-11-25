@@ -124,14 +124,13 @@ const TranslatedCaption = ({ text }: { text: string }) => {
 	const dictionary = useRecoilValue(bidirectionalDictionary)
 	// split string by new-lines and spaces and map word to translated
 	const words = captionEntryToWords(text).map((word, i) => (
-		<>
+		<span key={i}>
 			<TranslatedWord
-				key={i}
 				word={word}
 				translations={dictionary.get(trimDictionaryWord(word).toLowerCase())}
 			/>
 			<Space />
-		</>
+		</span>
 	))
 
 	return (

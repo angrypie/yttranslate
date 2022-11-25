@@ -1,29 +1,13 @@
 ## In Progress
-	- Improve selection of translated words.
-## Sprint - Prepare portuguese/russian dictionaries ### Completed in sprint
-	- remove lag when fuzzy search are initializing 
-	- use separate endpoint to detect if dictionary update necessary (use patches?)
+## Sprint
 
-	+ Remove &bspn; character https://youtu.be/NShZsgd7rV4?t=854
-	+ load dictionaries from subdomain API
-	+ Show translated captions alongside with auto-generated
-	+ Find better way to search current displayed captions (generated and manual)
-	+ Captions dosen't show up on new video
-	+ Popup crashes on captins switch
-	+ Setup target and native language in settings
-	+ Allow to select main subtitles to use third-party translation extensios.
-	+ Adapt captions fontSize and it's container width to player content width
-	+ Fix words flickering when tooltip appear
-	+ Show native and target language captions at the same time.
-	+ subtitles container should stay in one vertical position (bottom bar now makes it jump around)
-	+ Setup learning target language
-	+ Set captions to target langugage automatically (if captions exist)
-	+ Show UI immediately after page load (don't wait for dictionary load)
-	+ show same word if translation not found
-	+ use fuzzy search to find simmilar word and Levenshtine distance to find best match.
-	+ cache fuzzy search index
+## Milestone 0.2
+	- Migrate to ReactNative (only web for now)
+	- User should be able to select multiple words without lag introduced by tooltip (react native migration)
+	- Prepare dictionaries: pt-ru, en-ru)
 
 ## Backlog
+	- use API endpoint to detect if dictionary update is necessary (use patches?)
 	- google translate on selection?
 	-  Looking for `ficamos` we got `we look` wich is not correct, and `ficámos` was ignored.
 		- Entries in dict: `ficamos	we look	1` and `ficámos	we were	2	we stayed	1`
@@ -54,20 +38,22 @@
 		-	don't relay that much on characters triming, it hard to adapt to every language.
 
 ## Done
-	- separate floating button from portals
-	- Trim all characters not related to word (eg " ? ).
-	- redesign popover, make accent on most used words
-	- display by default few variants with highest score
-	- implement score for each variant and sort them in export file
-	- setup esbuild to serve gzip files with 'content-encoding: gzip'
-	- display suggestions / variants (first 4 on hover, rest on click)
-	- figure out how freedict works, is it suitable? (for now I will be working with 'my' dictionary)
-	- merge all dictionaries available
-	- use detecting language library to filter other languages (it may be like 10% of them)
-	- use wordList of all the portuguese words in tests for makedict to be sure that all words are preset 
-	- prepare dictionary on the server (compress to load faster?)
-		- join few various dictionaries to have more words (for now its's angrypie/makedict)
-	- find source of usable dictionaries
-	- configure esbuild to use new React 17 JSX transform (jsx: 'automatic')
-	- switch to esbuild
-	- replace mantine (radix-ui is unstyled and didn't found universal ReactNative/React kit)
+### Milestone 0.1
+	+ Remove &bspn; character https://youtu.be/NShZsgd7rV4?t=854
+	+ load dictionaries from subdomain API
+	+ Show translated captions alongside with auto-generated
+	+ Find better way to search current displayed captions (generated and manual)
+	+ Captions dosen't show up on new video
+	+ Popup crashes on captins switch
+	+ Setup target and native language in settings
+	+ Allow to select main subtitles to use third-party translation extensios.
+	+ Adapt captions fontSize and it's container width to player content width
+	+ Fix words flickering when tooltip appear
+	+ Show native and target language captions at the same time.
+	+ subtitles container should stay in one vertical position (bottom bar now makes it jump around)
+	+ Setup learning target language
+	+ Set captions to target langugage automatically (if captions exist)
+	+ Show UI immediately after page load (don't wait for dictionary load)
+	+ show same word if translation not found
+	+ use fuzzy search to find simmilar word and Levenshtine distance to find best match.
+	+ cache fuzzy search index

@@ -84,9 +84,9 @@ function useSelectLanguageCode(init: string, label: string) {
 			value={code}
 			onChange={value => setCode(value ?? init)}
 			data={[
-				{ value: 'pt-PT', label: 'Portuguese' },
+				{ value: 'pt', label: 'Portuguese' },
 				{ value: 'en', label: 'English' },
-				{ value: 'ru-RU', label: 'Russian' },
+				{ value: 'ru', label: 'Russian' },
 			]}
 		/>
 	)

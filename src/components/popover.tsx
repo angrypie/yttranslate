@@ -22,20 +22,20 @@ export const Tooltip = ({
 	trigger,
 	children,
 	container,
-	forceOpen = false,
+	open,
 }: {
 	children: React.ReactNode
 	trigger: React.ReactNode
 	container?: HTMLElement
-	forceOpen?: boolean
+	open?: boolean
 }) => {
-	const [open, setOpen] = React.useState(false)
+	const [openState, setOpenState] = React.useState(false)
 
 	return (
-		<PopoverRoot open={open || forceOpen}>
+		<PopoverRoot open={open ?? openState}>
 			<PopoverTrigger
-				onMouseEnter={() => setOpen(true)}
-				onMouseLeave={() => setOpen(false)}
+				onMouseEnter={() => setOpenState(true)}
+				onMouseLeave={() => setOpenState(false)}
 				asChild={true}
 			>
 				{trigger}
